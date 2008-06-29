@@ -1,0 +1,10 @@
+Revision history for Perl extension XML::Pastor 
+0.50 Sun Jun 29 2008
+	- Added XML::Pastor::Pastorize
+	- Added test scripts (eval, instance)
+	- Added script bin/pastorize
+	- Bumped version number to 0.50
+	
+0.01 Sat Nov 15 2003
+	- original version; created by copying from another project
+
