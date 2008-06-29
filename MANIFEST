@@ -49,3 +49,4 @@ test/schema/schema1.xsd
 test/schema/schema2.xsd
 test/schema/schema3.xsd
 test/xml/country.xml
+META.yml                                 Module meta-data (added by MakeMaker)

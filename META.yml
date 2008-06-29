@@ -1,0 +1,30 @@
+--- #YAML:1.0
+name:                XML-Pastor
+version:             0.52
+abstract:            Generate Perl classes with XML bindings starting from a W3C XSD Schema
+license:             ~
+author:              
+    - Ayhan Ulusoy <dev@ulusoy.name>
+generated_by:        ExtUtils::MakeMaker version 6.44
+distribution_type:   module
+requires:     
+    Carp:                          0
+    Class::Accessor:               0
+    Class::Data::Inheritable:      0
+    Cwd:                           0
+    Data::Dumper:                  0
+    File::chdir:                   0
+    File::Path:                    0
+    File::Spec:                    0
+    Getopt::Long:                  0
+    IO::File:                      0
+    LWP::UserAgent:                0
+    MIME::Base64:                  0
+    Pod::Usage:                    0
+    Scalar::Util:                  0
+    Test::More:                    0
+    URI:                           0
+    XML::LibXML:                   0
+meta-spec:
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3

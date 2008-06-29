@@ -18,7 +18,7 @@ use XML::Pastor::Util;
 package XML::Pastor;
 
 use vars qw($VERSION);
-$VERSION	= '0.51';
+$VERSION	= '0.52';
 
 #------------------------------------------------------------
 sub new {
