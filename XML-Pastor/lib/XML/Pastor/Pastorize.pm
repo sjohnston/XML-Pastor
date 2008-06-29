@@ -13,7 +13,7 @@ use Getopt::Long;
 use Pod::Usage;
 
 use vars qw($VERSION);
-$VERSION = '0.50';
+$VERSION = '0.51';
 
 
 

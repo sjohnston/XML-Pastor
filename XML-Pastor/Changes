@@ -1,4 +1,8 @@
 Revision history for Perl extension XML::Pastor 
+0.51 Sun Jun 29 2008
+	- (Hopefully) solve the CPAN indexing problem
+	- Bumped the version anyway.
+	
 0.50 Sun Jun 29 2008
 	- Added XML::Pastor::Pastorize
 	- Added test scripts (eval, instance)
