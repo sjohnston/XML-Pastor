@@ -7,7 +7,7 @@ use lib './lib';
 use XML::Pastor::Pastorize;
 
 use vars qw($VERSION);
-$VERSION	= '0.52';
+$VERSION	= '0.53';
 
 XML::Pastor::Pastorize->run();
 

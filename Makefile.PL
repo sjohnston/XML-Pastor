@@ -24,7 +24,7 @@ WriteMakefile(
     VERSION_FROM	=> 'lib/XML/Pastor.pm',    
     ABSTRACT   		=> 'Generate Perl classes with XML bindings starting from a W3C XSD Schema',    
     DISTNAME      	=> 'XML-Pastor',
-    INSTALLDIRS		=> 'vendor',
+    LICENSE			=> 'perl',
     AUTHOR        	=> 'Ayhan Ulusoy <dev@ulusoy.name>',
     EXE_FILES     	=> [ map {"bin/$_"} @programs],
     

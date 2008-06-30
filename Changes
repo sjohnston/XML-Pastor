@@ -1,4 +1,10 @@
 Revision history for Perl extension XML::Pastor 
+0.53 Sun Jun 29 2008
+	- LICENSE was missing from Makefile.PL
+	- README was missing. Generated it with pod2usage.
+	- Changes and Makefile.PL had executable bit set for some reason. Fixed it.
+	
+
 0.52 Sun Jun 29 2008
 	- still the CPAN indexing problem
 	- Bumped the version anyway.

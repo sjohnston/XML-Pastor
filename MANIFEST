@@ -38,6 +38,7 @@ lib/XML/Pastor/Util.pm
 Makefile.PL
 MANIFEST
 MANIFEST.SKIP
+README
 t/00.5.load.t
 t/01.5.eval01.t
 t/01.5.eval02.t
