@@ -14,7 +14,7 @@ use XML::Pastor::Schema;
 
 #======================================================================
 package XML::Pastor::Schema::Parser;
-use XML::Pastor::Util  qw(getAttributeHash);
+use XML::Pastor::Util  qw(getAttributeHash sprint_xml_element);
 use Scalar::Util qw(reftype);
 
 our @ISA = qw(Class::Accessor);
@@ -254,7 +254,7 @@ sub _processNode {
 	# TODO : Namespaces 
 	my $name		= $node->localName;
 
-	if ($verbose >= 9) {
+	if ($verbose >= 10) {
 		my $attribs = getAttributeHash($node);
 		print STDERR "  $name ($attribs->{name})\n" ;	
 	}
@@ -843,6 +843,7 @@ sub _processOtherNodes {
 			if (my $host=$context->findNode(class=>"XML::Pastor::Schema::Object")) {
 				# Multiplicity is allowed.
 				my $oldValue = $host->{$name};
+				
 				if (defined($oldValue)) {
 					my $rt =reftype($oldValue);
 					unless (defined($rt) and (reftype($oldValue) eq 'ARRAY')) {
@@ -855,11 +856,11 @@ sub _processOtherNodes {
 				}
 				
 			}else {
-				die "Pastor : Don't know what to do with element '$name'\n" . _sprint_xml_element($node->parentNode() || $node) . "\n";				
+				die "Pastor : Don't know what to do with element '$name'\n" . sprint_xml_element($node->parentNode() || $node) . "\n";				
 			}
 		}		
 	}else {
-		die "Pastor : Unexpected element $name in schema!\n" . _sprint_xml_element($node->parentNode() || $node) . "\n";	
+		die "Pastor : Unexpected element '$name' in schema!\n" . sprint_xml_element($node->parentNode() || $node) . "\n";	
 	}	
 	
 	# Nothing will get pushed on the node-stack.

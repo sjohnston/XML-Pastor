@@ -213,7 +213,7 @@ sub _resolveObjectClass {
 		print "   object '" . $object->name . "' is a global element. Resolving class...\n" if ($verbose >= 7); 
 		$object->class($class_prefix. $object->name());
 	}elsif(UNIVERSAL::can($object, "type") && UNIVERSAL::can($object, "class")) {
-		print "   object '" . $object->name . "' 'can' type() and class(). TYPE='".$object->type() . "' CLASS='" . $object->class() . "' Resolving class...\n"  if ($verbose >= 7); 			
+		print "   object '" . ($object->name || ''). "' 'can' type() and class(). TYPE='". ($object->type() || '') . "' CLASS='" . ($object->class() || '') . "' Resolving class...\n"  if ($verbose >= 7); 			
 		$object->class($self->_typeToClass($object->type(), $opts));		
 	}	
 

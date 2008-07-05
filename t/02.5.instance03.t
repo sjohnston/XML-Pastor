@@ -1,5 +1,5 @@
 use utf8;
-use Test::More tests=>29;
+use Test::More tests=>34;
 
 use_ok('URI');
 use_ok('URI::file');
@@ -147,37 +147,42 @@ my $cities = $country->city;
 ok(defined($cities), 'defined cities');
 
 # Get a hash of the cities on 'code' attribute
-my $city_h = $cities->hash('code');
+my $city_h = $cities->hash(sub{ shift->code() });
 my $code;
 my $city;
 
 # Check the name of a given city
 $code = 'AVA';
 $city = $city_h->{$code};
+ok(defined($city), "City exists {$code}");
 $expected = 'Ambrières-les-Vallées';
 is(lc($city->name), lc($expected), "city name '". $code . "'");
 
 # Check the name of a given city
 $code = 'BCX';
 $city = $city_h->{$code};
+ok(defined($city), "City exists {$code}");
 $expected = 'Beire-le-Châtel';
 is(lc($city->name), lc($expected), "city name '". $code . "'");
 
 # Check the name of a given city
 $code = 'LYO';
 $city = $city_h->{$code};
+ok(defined($city), "City exists {$code}");
 $expected = 'Lyon';
 is(lc($city->name), lc($expected), "city name '". $code . "'");
 
 # Check the name of a given city
 $code = 'NCE';
 $city = $city_h->{$code};
+ok(defined($city), "City exists {$code}");
 $expected = 'Nice';
 is(lc($city->name), lc($expected), "city name '". $code . "'");
 
 # Check the name of a given city
 $code = 'PAR';
 $city = $city_h->{$code};
+ok(defined($city), "City exists {$code}");
 $expected = 'Paris';
 is(lc($city->name), lc($expected), "city name '". $code . "'");
 

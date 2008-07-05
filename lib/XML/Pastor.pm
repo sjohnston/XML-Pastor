@@ -18,7 +18,7 @@ use XML::Pastor::Util;
 package XML::Pastor;
 
 use vars qw($VERSION);
-$VERSION	= '0.53';
+$VERSION	= '0.54';
 
 #------------------------------------------------------------
 sub new {
@@ -117,14 +117,35 @@ And somewhere in an other place of the code ...
   $country = MyApp::Data::country->from_xml_url('http://some/url/to/country.xml');	 # or from a URL
   $country = MyApp::Data::country->from_xml_fh($fh); 	# or from a file handle  
   $country = MyApp::Data::country->from_xml_dom($dom);	# or from DOM  (a XML::LibXML::Node or XML::LibXML::Document)
-
+  $country = MyApp::Data::country->from_xml($resource);	# or from any of the above. Handy if you don't know the resource.' 
+  
   # or from an XML string
   $country = MyApp::Data::country->from_xml_string(<<'EOF');
   
-  <?xml version="1.0"?>
-  <country code="FR" name="France">
-    <city code="PAR" name="Paris"/>
-    <city code="LYO" name="Lyon"/>    
+  <?xml version="1.0" encoding="UTF-8"?>
+  <country 	xmlns="http://www.example.com/country" 
+  			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  			xsi:schemaLocation="http://www.example.com/country" 
+  			code="FR">
+  			
+	<name>France</name>
+	<population date="2000-01-01" figure="60000000"/>
+	<currency code="EUR" name="Euro"/>
+    <city code="AVA">
+		<name>Ambrières-les-Vallées</name>
+	</city>
+	<city code="BCX">
+		<name>Beire-le-Châtel</name>
+	</city>
+	<city code="LYO">
+		<name>Lyon</name>
+	</city>
+	<city code="NCE">
+		<name>Nice</name>
+	</city>
+	<city code="PAR">
+		<name>Paris</name>
+	</city>
   </country>
   EOF
   
@@ -134,21 +155,34 @@ And somewhere in an other place of the code ...
   
   # Now you can manipulate your country object.  
   print $country->name;					# prints "France"
-  print $country->city->[0]->name;		# prints "Paris"
+  print $country->currency->_code;		# prints "EUR"
+  print $country->city->[0]->name;		# prints "Ambrières-les-Vallées"
   
+  print $country->city->name;			# prints the same thing, i.e. "Ambrières-les-Vallées"
+  										# Note the ABSENCE of array indexing. 
+  										# You don't have to worry about multiplicity!
   
   # Let's make some changes  
-  $country->code('fr');
+  $country->_code('fr');	# Change the 'code' attribute. Notice the underscore prefix on the accessor.
+  $country->code('fr');		# Same thing, but risky in case of attribute name collision with a child element name. It's there for backward compatibility.	  
   $country->name('FRANCE');
   
+  #Let's access the cities as a hash keyed on city code.
+  my $city_h = $country->city->hash('_code');					# This will hash the node array on the 'code' attribute
+  my $city_h = $country->city->hash(sub {shift->_code(); });	# This will do the same thing with a CODE reference.
+  
+  print $city_h->{'NCE'}->name;		# prints "Nice".
+  
+  
+  # Let's add a city
   my $class=$country->xml_field_class('city');
   my $city = $class->new();
-  $city->code('MRS');
+  $city->_code('MRS');
   $city->name('Marseille');
   
   push @{$country->city}, $city;
   
-  print $country->city->[2]->name;	# prints "Marseille"
+  print $country->city->[5]->name;	# prints "Marseille"
   
   # Time to validate our XML
   $country->xml_validate();			# This one will DIE on failure
@@ -163,12 +197,95 @@ And somewhere in an other place of the code ...
   $country->to_xml_file('some/path/to/country.xml');		# To a file  
   $country->to_xml_url('http://some/url/to/country.xml');	# To a URL  
   $country->to_xml_fh($fh);					# To a FILE HANDLE  
-
+  $country->to_xml($resource);				# To any of the above. Handy if we don't know ahead of time.'
+  
   my $dom=$country->to_xml_dom();			# To a DOM Node (XML::LibXML::Node)
   my $dom=$country->to_xml_dom_document();	# To a DOM Document  (XML::LibXML::Document)
   my $xml=$country->to_xml_string();		# To a string  
   my $frag=$country->to_xml_fragment();		# Same thing without the <?xml version="1.0?> part
     
+By the way, for those who are interesed in the data structure, here is a sample DUMP of what '$country' might look like. 
+However, don't count on anything but attribute and element names. Anything else may change. You have been warned.
+
+   print Dumper($country);	# actually with Sortkeys(1);
+   
+   # ---- Prints the following DUMP
+   
+   $VAR1 = bless( {
+                 '._nodeName_' => 'country',
+                 '_code' => bless( {
+                                     'value' => 'FR'
+                                   }, 'XML::Pastor::Builtin::string' ),
+                 'city' => bless( [
+                                    bless( {
+                                             '._nodeName_' => 'city',
+                                             '_code' => bless( {
+                                                                 'value' => 'AVA'
+                                                               }, 'XML::Pastor::Test::Type::Code' ),
+                                             'name' => bless( {
+                                                                'value' => "Ambri\x{e8}res-les-Vall\x{e9}es"
+                                                              }, 'XML::Pastor::Builtin::string' )
+                                           }, 'XML::Pastor::Test::Type::City' ),
+                                    bless( {
+                                             '._nodeName_' => 'city',
+                                             '_code' => bless( {
+                                                                 'value' => 'BCX'
+                                                               }, 'XML::Pastor::Test::Type::Code' ),
+                                             'name' => bless( {
+                                                                'value' => "Beire-le-Ch\x{e2}tel"
+                                                              }, 'XML::Pastor::Builtin::string' )
+                                           }, 'XML::Pastor::Test::Type::City' ),
+                                    bless( {
+                                             '._nodeName_' => 'city',
+                                             '_code' => bless( {
+                                                                 'value' => 'LYO'
+                                                               }, 'XML::Pastor::Test::Type::Code' ),
+                                             'name' => bless( {
+                                                                'value' => 'Lyon'
+                                                              }, 'XML::Pastor::Builtin::string' )
+                                           }, 'XML::Pastor::Test::Type::City' ),
+                                    bless( {
+                                             '._nodeName_' => 'city',
+                                             '_code' => bless( {
+                                                                 'value' => 'NCE'
+                                                               }, 'XML::Pastor::Test::Type::Code' ),
+                                             'name' => bless( {
+                                                                'value' => 'Nice'
+                                                              }, 'XML::Pastor::Builtin::string' )
+                                           }, 'XML::Pastor::Test::Type::City' ),
+                                    bless( {
+                                             '._nodeName_' => 'city',
+                                             '_code' => bless( {
+                                                                 'value' => 'PAR'
+                                                               }, 'XML::Pastor::Test::Type::Code' ),
+                                             'name' => bless( {
+                                                                'value' => 'Paris'
+                                                              }, 'XML::Pastor::Builtin::string' )
+                                           }, 'XML::Pastor::Test::Type::City' )
+                                  ], 'XML::Pastor::NodeArray' ),
+                 'currency' => bless( {
+                                        '._nodeName_' => 'currency',
+                                        '_code' => bless( {
+                                                            'value' => 'EUR'
+                                                          }, 'XML::Pastor::Builtin::string' ),
+                                        '_name' => bless( {
+                                                            'value' => 'Euro'
+                                                          }, 'XML::Pastor::Builtin::string' )
+                                      }, 'XML::Pastor::Test::Type::Country_currency' ),
+                 'name' => bless( {
+                                    'value' => 'France'
+                                  }, 'XML::Pastor::Builtin::string' ),
+                 'population' => bless( {
+                                          '._nodeName_' => 'population',
+                                          '_date' => bless( {
+                                                              'value' => '2000-01-01'
+                                                            }, 'XML::Pastor::Builtin::date' ),
+                                          '_figure' => bless( {
+                                                                'value' => '60000000'
+                                                              }, 'XML::Pastor::Builtin::nonNegativeInteger' )
+                                        }, 'XML::Pastor::Test::Type::Population' )
+               }, 'XML::Pastor::Test::country' );
+ 
  
 =head1 DESCRIPTION
 
@@ -197,6 +314,17 @@ run-time giving much more flexibility to the user. This added flexibility has a 
 the fact that the XSD schema needs to be accessible at run-time. Note that the performance penalty applies only to the code genereration (pastorize) phase; 
 the generated classes perform the same as if they were generated offline.
 
+=head1 SCOPE AND WARNING
+
+B<XML::Pastor> is quite good for the so called 'data xml', that is, XML without mixed markup. 
+It is NOT suitable for parsing and manipulating a markup language such as XHTML for example. 'Mixed markup' means
+that an element can contain both textual data and child elements miexed together. B<XML::Pastor> does not support that. 
+
+B<XML::Pastor> is NOT a recommended way of treating HUGE XML documents. The exact definition of HUGE varies. 
+It usually means paging into virtual memory. If you find yourself doing that, you should
+know that you might be better of with L<XML::Twig> which lets you selectively parse chunks of a tree. Or better yet, just
+do B<SAX> processing. Note that things are not that bad with B<XML::Pastor> => The memory used by B<XML::Pastor> is 
+not that much more than that of L<XML::Simple> or a DOM for the same document.
 
 =head1 METHODS
 
@@ -377,15 +505,35 @@ error will result in a 'die' which will in turn write on STDERR. A higher value 
 =head1 SCHEMA SUPPORT
 
 The version 1.0 of W3C XSD schema (2001) is supported almost in full, albeit with some exceptions (see L</"BUGS & CAVEATS">). 
+
+=head2 SUPPORTED
+
 Such things as complex and simple types, global elements, groups, attributes, and attribute groups are supported. Type declarations
-can either be global or done locally. Complex type derivation by extension and simple type derivation by restriction is supported. All the basic W3C builtin types are supported. Unions and lists are supported. 
+can either be global or done locally. 
+
+Complex type derivation by extension and simple type derivation by restriction is supported. 
+
+All the basic W3C builtin types are supported. 
+
+Unions and lists are supported.
+ 
 Most of the restriction facets for simple types are supported (I<length, minLength, maxLength, pattern, enumeration, minInclusive, maxInclusive, minExclusive, maxExclusive, totalDigits, fractionDigits>). 
 
 Schema inclusion (include) and redefinition (redefine) are supported, allthough for 'redefine' not much testing was done. 
 
-Namespaces are supported in as much as there is no more than one namespace for a given schema. 'Import' is not supported because of this.
+=head2 PATIALLY SUPPORTED
+
+Namespaces are supported in as much as there is no more than one namespace for a given schema. 
+
+=head2 NOT SUPPORTED
  
-Neither elements with 'mixed' content nor substitution groups are supported at this time.
+Schema 'import' is not supported because of insufficient namespace support.
+
+Elements with 'mixed' content are NOT supported.
+
+Substitution groups are NOT supported.
+
+'any' and 'anyAttribute' are NOT supported.
 
 =head1 HOW IT WORKS
 
@@ -465,17 +613,14 @@ Sometimes you will be forced to use a W3C schema defined by someone else. In tha
 
 But most often, you will be the one who defines the W3C schema itself. So you will have full power over the names within. 
 
-As mentioned earlier, B<XML::Pastor> will generate accesor methods for the child elements and attributes of each class. 
+As mentioned earlier, B<XML::Pastor> will generate accesor methods for the child elements and attributes of each class. The attribute names
+will be prefixed by an underscore in the hash. Attribute accessors will have an underscore prefix, too. However, accessor aliases will be generated 
+without the underscore prefix for those attributes whose names don't clash with child element names.
+'
 Since there exist some utility methods defined under L<XML::Pastor::ComplexType> and L<XML::Pastor::SimpleType> that are the ancestors of all the generated classes from your schema there is a risk of name collisions. 
 Below is a list of suggestions that will ensure that there are no name collisions within your schema and with the defined methods.
 
 =over 
-
-=item Avoid child Elements and attributes with the same name
-
-Never use the same name for an attribute and a child element of the same complex type or element within your schema. For instance, if you have an attribute called 'title' within a Complex type called 'Person', do not 
-in any circumstance create a child element with the same name 'title'. Although this is technically possible under W3C schema, XML::Pastor will be confused in this case. The hash field of an object will contain one or the 
-other (not both). The behavior of the accessor 'title' will be undefined in this case. Please do not count on any behavior that may exist currently on this subjet as it may change at any time.
 
 =item Element and attribute names should start with lower case
 
@@ -493,6 +638,13 @@ words in element and attribute names. See L<XML::Pastor::ComplexType> for the na
 
 The names of global types (complex and simple) should start with an upper case and continue with lower case. Word boundries should be uppercased. This resembles the package name convention in Perl. 
 Example : 'B<City>', 'B<Country>', 'B<CountryCode>'. 
+
+=item Avoid child Elements and attributes with the same name, if you can
+
+Try not to use the same name for an attribute and a child element of the same complex type or element within your schema. For instance, if you have an attribute called 'title' within a Complex type called 'Person', do not 
+in any circumstance create a child element with the same name 'title'. Although this is technically possible under W3C schema, it should really be discoureged. Since v0.54, XML::Pastor overcomes this by introducing an
+underscore ('_') prefix to attribute names in the hash. Attribute accessors will have an underscore prefix, too. However, accessor aliases will be generated 
+without the underscore prefix for those attributes whose names don't clash with child element names. So, if there is no clash, old code should continue to work as long as it used accessors to get at the value.
 
 =back
 

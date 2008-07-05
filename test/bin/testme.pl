@@ -1,3 +1,5 @@
+#!/usr/bin/perl -w
+
 use utf8;
 use strict;
 
@@ -7,6 +9,7 @@ use URI::file;
 
 use XML::Pastor;
 use XML::Pastor::Util	qw(slurp_file);
+use Data::Dumper;
 
 main();
 
@@ -38,13 +41,13 @@ sub test_pastor() {
 	my $pastor = XML::Pastor->new();
 	
 	$pastor->generate(	mode =>'eval',
-#							schema=>['./test/schema/schema3.xsd'], 
+							schema=>['./test/schema/schema3.xsd'], 
 #							schema=>['./test/schema/schema2.xsd'], 							
-							schema=>['./test/schema/schema1.xsd'], 
-#							schema=>['http://test.dev.vedora.org/ayhan/workspace/XML-Pastor/test/schema/schema1.xsd'], 
+#							schema=>['./test/schema/schema1.xsd'],
+#							schema=>['./test/schema/schema4_mixed.xsd'],	# doesn't work yet.  
 							destination=>'./test/out/lib/', 
 							class_prefix=>"XML::Pastor::Test",
-							verbose => 7
+							verbose => 9
 					);
 
 	
@@ -63,6 +66,11 @@ sub test_pastor() {
 	my $str = slurp_file("./test/xml/country.xml");
 	$country = XML::Pastor::Test::country->from_xml($str);
 	test_country($country);		
+
+	print "\n\n******* DUMP *****************************\n";
+	my $d=Data::Dumper->new([$country]);
+	$d->Sortkeys(1);
+	print $d->Dump();
 		
 #	print "\n\n******* HTTP ***********************************";
 #	$country = XML::Pastor::Test::country->from_xml('http://test.dev.vedora.org/ayhan/workspace/XML-Pastor/test/xml/country.xml');

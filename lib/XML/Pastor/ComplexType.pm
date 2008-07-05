@@ -154,17 +154,19 @@ sub from_xml_dom($) {
 		
 	# This is a secret place where we put the node name in case we need it later.
 	# TODO : Namespaces
-	$self->{_nodeName_} = $node->localName();
+	$self->{'._nodeName_'} = $node->localName();
 
 	# Get the attributes from DOM into self		
 	my $attribs 	= getAttributeHash($node);
 	my $attribInfo	= $type->effectiveAttributeInfo();
+	my $attribPfx	= $type->attributePrefix() || '';
+	
 	foreach my $attribName (@{$type->effectiveAttributes()}) {
 		next unless ( defined($attribs->{$attribName})); 
 		
 		my $class = $attribInfo->{$attribName}->class();
 		print "\nfrom_xml_dom : Attribute = $attribName,  Class = $class" if ($verbose >= 7);			
-		$self->{$attribName} = $class->new(value => $attribs->{$attribName});
+		$self->{$attribPfx . $attribName} = $class->new(value => $attribs->{$attribName});
 	}
 
 	# Get the child elements from DOM into self			
@@ -333,7 +335,7 @@ sub to_xml_dom {
 			my $xmlSchemaElement = $self->XmlSchemaElement;
 			$name = $xmlSchemaElement->name();
 		}else {
-			$name = $self->{_nodeName_};			
+			$name = $self->{'._nodeName_'};			
 		}
 	}
 	
@@ -357,8 +359,11 @@ sub to_xml_dom {
 	
 	# Attributes
 	my $attributes	= $type->effectiveAttributes();
+	my $attribPfx	= $type->attributePrefix() || '';
+	
 	foreach my $attribName (@$attributes) {
-		my $value = $self->{$attribName};
+		my $field = $attribPfx . $attribName;
+		my $value = $self->{$field};
 		next unless defined($value);
 		$node->setAttribute($attribName, "" . $value); # force stringification.				
 	}
@@ -425,8 +430,15 @@ sub _childToDom {
 	# TODO : Namespaces
 	my $node = $doc->createElement($name);
 	
-#	$node->appendChild( XML::LibXML::CDATASection->new( $child . "" ) ); # stringify
-	$node->appendChild( XML::LibXML::Text->new( $child . "" ) ); # stringify
+	my $text= $child . "";   # stringify
+
+	if ($text =~~ /[<>]/) {
+		# has special XML characters. Must be put in a CDATA section
+		$node->appendChild( XML::LibXML::CDATASection->new( $child . "" ) ); # stringify
+	} else {
+		# Normal text.
+		$node->appendChild( XML::LibXML::Text->new( $child . "" ) ); # stringify
+	}
 	
 	return $node;			
 }

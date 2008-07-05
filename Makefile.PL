@@ -2,19 +2,10 @@
 #
 use utf8;
 use ExtUtils::MakeMaker;
+require 5.008;
 
 my @programs = qw(pastorize);
 
-=begin COMMENT
-for (split "\n", <<'QUERIES') {
-pastorize|y|Generate round-trip XML Perl classes from W3C XML Schemas (XSD)
-QUERIES
-    my ($program, $default, $description) = split /\|/, $_;
-    if (prompt("Do you want to install '$program', the $description?",$default) =~ /^y/) {
-        push(@programs, $program);
-    }
-}
-=cut
  
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
@@ -45,7 +36,7 @@ WriteMakefile(
     			'Scalar::Util'					=> 0,
                 'Test::More'  					=> 0,
                 'URI'  							=> 0,                
-                'XML::LibXML'  					=> 0,                
+                'XML::LibXML'  					=> '1.60',                
                  },
 	    
 

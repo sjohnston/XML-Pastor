@@ -1,4 +1,13 @@
 Revision history for Perl extension XML::Pastor 
+0.54 Sat Jul 05 2008
+	- Added some more examples to documentation. Also brought some clarity, hopefully. 
+	- Fixed incorrect sprint_xml_element calls in XML::Pastor::Schema::Parser (it should have been imported from XML::Pastir::Util)
+	_ XML::Pastor::NodeArray has been refactored to Data::HashArray which is now a separate module.
+	- XML::Pastor::NodeArray->hash() can now accept CODE references as key fields. 
+	- Attributes are now prefixed with an underscore '_' in the element hash. 
+	  Attribute accessors follow the same pattern. However, non-prefixed accessor aliases
+	  are provided when this doesn't conflict with a child element name.
+	  
 0.53 Sun Jun 29 2008
 	- LICENSE was missing from Makefile.PL
 	- README was missing. Generated it with pod2usage.

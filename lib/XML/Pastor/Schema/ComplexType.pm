@@ -6,7 +6,7 @@ use XML::Pastor::Schema::Type;
 package XML::Pastor::Schema::ComplexType;
 our @ISA = qw(XML::Pastor::Schema::Type);
 
-XML::Pastor::Schema::ComplexType->mk_accessors(qw(attributes attributeInfo elements elementInfo xAttributes xAttributeInfo xElements xElementInfo targetNamespace));
+XML::Pastor::Schema::ComplexType->mk_accessors(qw(attributes attributeInfo attributePrefix elements elementInfo xAttributes xAttributeInfo xElements xElementInfo targetNamespace));
 
 sub new {
 	my $proto 	= shift;
@@ -28,6 +28,10 @@ sub new {
 	}
 	unless ($self->{contentType}) {
 		$self->{contentType} = "complex";
+	}
+	
+	unless (defined($self->{attributePrefix})) {
+		$self->{attributePrefix} = "_";	# Default value. No need to change this for now.
 	}
 	
 	return bless $self, $class;
