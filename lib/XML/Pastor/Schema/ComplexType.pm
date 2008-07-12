@@ -6,7 +6,7 @@ use XML::Pastor::Schema::Type;
 package XML::Pastor::Schema::ComplexType;
 our @ISA = qw(XML::Pastor::Schema::Type);
 
-XML::Pastor::Schema::ComplexType->mk_accessors(qw(attributes attributeInfo attributePrefix elements elementInfo xAttributes xAttributeInfo xElements xElementInfo targetNamespace));
+XML::Pastor::Schema::ComplexType->mk_accessors(qw(attributes attributeInfo attributePrefix elements elementInfo isSimpleContent xAttributes xAttributeInfo xElements xElementInfo));
 
 sub new {
 	my $proto 	= shift;

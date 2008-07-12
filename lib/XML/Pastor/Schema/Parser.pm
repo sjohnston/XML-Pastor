@@ -6,7 +6,7 @@ use File::Spec;
 use LWP::UserAgent;
 use URI;
 use URI::file;
-
+use Class::Accessor;
 
 use XML::LibXML;
 use XML::Pastor::Stack;
@@ -283,6 +283,7 @@ sub _processNode {
 		/^schema$/			and do {	$obj=$self->_processSchemaNode($node);		last SWITCH;};
 		/^selector$/		and do {	return 0;};	# ignore children as well	
 		/^sequence$/		and do {	last SWITCH;};
+		/^simpleContent$/	and do {	$obj=$self->_processSimpleContent($node);	last SWITCH;};		
 		/^simpleType$/		and do {	$obj=$self->_processSimpleType($node);		last SWITCH;};
 		/^unique$/			and do {	return 0;};		
 		/^union$/			and do {	$obj=$self->_processUnion($node);		last SWITCH;};		
@@ -735,9 +736,54 @@ sub _processSchemaNode {
 		die "Pastor : Schema elements cannot be nested!\n";
 	}
 	
-	$context->targetNamespace($obj->targetNamespace) if ($obj->targetNamespace);
+	my $nsUri = undef;
+	if ($obj->targetNamespace) {
+		# Schema defines a targetNamspace. It's easy.
+		$nsUri = $obj->targetNamespace();
+	}else{
+		# This schema doesn't define a targetNamespace itself. It probably means its included. 
+		# But perhaps we can get it from the previous schema.
+		my $cstack= $self->contextStack;
+		if ($cstack->count > 1) {
+			# Lucky, we've got one.
+			my $prevContext = $cstack->[1];	# This is the one before the top. Becuase a push is actually unshift.
+			$nsUri = $prevContext->targetNamespace();
+		}else {
+			# Hmmm. This is a truely no-namespace schema.
+			$nsUri = "";
+		}
+		
+	}
+
+	$context->targetNamespace($nsUri);	
+	$self->model->addNamespaceUri($nsUri);
+	
 	return $obj;
 }
+
+
+#------------------------------------------------------------
+# This routine is called whenever an 'simpleType' element is encountered 
+# in the schema being processed.
+#------------------------------------------------------------
+sub _processSimpleContent {
+	my $self 	= shift;
+	my $node 	= shift;	
+	my $context = $self->context();				
+	
+	# if this is a local definition, then our host element/attribute must be of this type
+	if (my $host=$context->findNode(class=>["XML::Pastor::Schema::ComplexType", 
+											])) {
+		$host->setFields({isSimpleContent=>1});
+	}
+
+	# Nothing to add to the model.
+
+	# Nothing will get pushed on the node-stack.
+	return undef;
+
+}
+
 
 #------------------------------------------------------------
 # This routine is called whenever an 'simpleType' element is encountered 
@@ -765,7 +811,7 @@ sub _processSimpleType {
 											"XML::Pastor::Schema::List", 											
 											])) {
 		if ( 	UNIVERSAL::isa($host, "XML::Pastor::Schema::Attribute") ||
-     			UNIVERSAL::isa($host, "XML::Pastor::Schema::Attribute") ) {			
+     			UNIVERSAL::isa($host, "XML::Pastor::Schema::Element") ) {			
 			$host->setFields({type=>$obj->name()});
      	}elsif (UNIVERSAL::isa($host, "XML::Pastor::Schema::Union")) {
 			my $mbt=$host->memberTypes;

@@ -22,14 +22,14 @@ XML::Pastor::Builtin::base64Binary->XmlSchemaType( bless( {
 #-----------------------------------------------------------------
 sub toBinary {
 	my $self  = shift;
-	my $value = $self->value() . "";	
+	my $value = $self->__value() . "";	
 	return MIME::Base64::decode($value)
 }
 
 #-----------------------------------------------------------------
 sub setFromBinary($$) {
 	my $self  = shift;
-	return $self->value(MIME::Base64::encode($_[0], ''));
+	return $self->__value(MIME::Base64::encode($_[0], ''));
 }
 
 #-----------------------------------------------------------------

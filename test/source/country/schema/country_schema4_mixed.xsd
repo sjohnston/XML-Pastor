@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 sp2 U (http://www.altova.com) by any (Ru-Board) -->
 <xs:schema xmlns="http://www.example.com/country" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.com/country" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:simpleType name="CodeUNLocode">
 		<xs:restriction base="xs:string">
@@ -52,6 +53,7 @@
 				</xs:complexType>
 			</xs:element>
 			<xs:element ref="city" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element ref="description" minOccurs="0"/>
 		</xs:sequence>
 		<xs:attribute name="code" type="xs:string"/>
 	</xs:complexType>
@@ -62,4 +64,20 @@
 	<xs:element name="city" type="City"/>
 	<xs:element name="country" type="Country"/>
 	<xs:element name="population" type="Population"/>
+	<xs:element name="htmlFragment">
+		<xs:complexType mixed="1">
+			<xs:sequence minOccurs="0">
+				<xs:any namespace="http://www.w3.org/1999/xhtml" processContents="skip" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="src" type="xs:anyURI" use="optional"/>
+			<xs:anyAttribute namespace="hello"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="description">
+		<xs:complexType>
+			<xs:sequence minOccurs="0">
+				<xs:element ref="htmlFragment" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 </xs:schema>

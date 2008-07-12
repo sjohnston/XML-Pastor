@@ -28,7 +28,7 @@ sub toDateTime() {
 	require DateTime::Format::W3CDTF;
 
 	my $f = DateTime::Format::W3CDTF->new;
-	my $dt = $f->parse_datetime( $self->value );
+	my $dt = $f->parse_datetime( $self->__value );
 	
 	return $dt;
 }
@@ -54,7 +54,7 @@ sub setFromDateTime($) {
 	require DateTime::Format::W3CDTF;
 
 	my $f = DateTime::Format::W3CDTF->new;
-	$self->value($f->format_datetime($dt));	
+	$self->__value($f->format_datetime($dt));	
 }
 
 
@@ -63,7 +63,7 @@ sub setFromDateTime($) {
 #--------------------------------------------------------
 sub xml_validate_further {
 	my $self  = shift;
-	my $value = $self->value;
+	my $value = $self->__value;
 	
 	# validate the date portion	
 	$value =~ /^[-]?(\d{4,})-(\d\d)-(\d\d)/;

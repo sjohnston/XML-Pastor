@@ -7,7 +7,7 @@ use_ok ('XML::Pastor');
 my $pastor = XML::Pastor->new();
 	
 $pastor->generate(	mode =>'eval',
-					schema=>['./test/schema/schema3.xsd'], 
+					schema=>['./test/source/country/schema/country_schema3.xsd'], 
 					class_prefix=>"XML::Pastor::Test",
 					destination=>'./test/out/lib/', 					
 					verbose =>0

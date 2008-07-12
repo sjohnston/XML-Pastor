@@ -1,4 +1,15 @@
 Revision history for Perl extension XML::Pastor 
+
+0.6.0 Sat Jul 12 2008
+	- Changed versioning scheme. It's now on two dots.
+	- Builtin::boolean  boolify OVERLOAD was not working properly. Fixed it.
+	- Data::HashArray was missing from the required modules in Makefile.PL. Fixed it.
+	- Code refactoring from XML::Pastor::ComplexType and XML::Pastor::SimpleType into XML::Pastor::Type
+	- Added John Micco's 'product.xsd' schema to the test suite
+	- Moved the use statement to within the package declaration in XML::Pastor to help Test::Unit's loader (as requested by John Micco from Mathworks).
+	- Fixed a bug that prevented the correct 'use' statements to be generated in generated code (Thanks to John Micco from Mathworks)
+	- Added support for simpleContent elements (those that a have a simple content but possibly with attributes).
+	
 0.54 Sat Jul 05 2008
 	- Added some more examples to documentation. Also brought some clarity, hopefully. 
 	- Fixed incorrect sprint_xml_element calls in XML::Pastor::Schema::Parser (it should have been imported from XML::Pastir::Util)

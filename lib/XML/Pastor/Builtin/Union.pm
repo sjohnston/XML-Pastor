@@ -12,7 +12,7 @@ sub xml_validate {
 	my $self	= shift;
 	my $path	= shift || '';	
 	my $type	= $self->XmlSchemaType();
-	my $value	= $self->value;
+	my $value	= $self->__value;
 	my $members	= $type->memberClasses || [];
 	
 	unless (@$members) {
@@ -21,7 +21,7 @@ sub xml_validate {
 	
 	foreach my $class (@$members) {
 		if (UNIVERSAL::can($class,"xml_validate")) {		
-			my $object = $class->new(value => $value);
+			my $object = $class->new(__value => $value);
 			if ($object->xml_validate(@_)) {
 				return 1;
 			}

@@ -1,15 +1,16 @@
 use utf8;
 use strict;
 
+#======================================================================
+package XML::Pastor::Builtin::boolean;
 use XML::Pastor::Builtin::Scalar;
+
+our @ISA = qw(XML::Pastor::Builtin::Scalar);
 
 use overload 
 	'bool'	=> \&boolify;
 	
-#======================================================================
-package XML::Pastor::Builtin::boolean;
-our @ISA = qw(XML::Pastor::Builtin::Scalar);
-
+	
 XML::Pastor::Builtin::boolean->XmlSchemaType( bless( {
                  'class' => 'XML::Pastor::Builtin::boolean',
                  'contentType' => 'simple',
@@ -30,8 +31,8 @@ XML::Pastor::Builtin::boolean->XmlSchemaType( bless( {
 #----------------------------------------------
 sub boolify {
 	my $self = shift;
-	my $val = $self->value();	
-		
+	my $val = $self->__value();	
+	
 	return 0 if ($val =~ /false/io);
 	return $val;	
 }

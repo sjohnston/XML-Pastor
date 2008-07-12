@@ -7,83 +7,22 @@ use XML::Pastor::Type;
 
 package XML::Pastor::SimpleType;
 use Scalar::Util qw(reftype);
+use XML::Pastor::Util  qw(getAttributeHash getChildrenHashDOM);
 
 our @ISA = qw(XML::Pastor::Type);
 
-use overload 
-	'""'	=> \&stringify,
-	'0+'	=> \&numify,
-	'bool'	=> \&boolify;
-	
-XML::Pastor::SimpleType->mk_accessors(qw(value));
 
-#----------------------------------------------
-# Accepts a single parameter or a hash.
-# If single parameter, then it is taken to be the value.
-#----------------------------------------------
-sub new {
-	my $proto 	= shift;
-	my $class	= ref($proto) || $proto;
-	my $self 	= (@_ == 1) ? {value=>$_[0]} : {@_};
-	
-	return bless $self, $class;
-}
 
-#----------------------------------------------
-# String value.
-#----------------------------------------------
-sub stringify {
-	my $self = shift;
-	return "" . $self->value();	# force stringification on value
-}
-
-#----------------------------------------------
-# Numeric value.
-#----------------------------------------------
-sub numify {
-	my $self = shift;
-	return +$self->value();	# force numerification on value
-}
-
-#----------------------------------------------
-# Boolean value.
-#----------------------------------------------
-sub boolify {
-	my $self = shift;
-	my $val = $self->value();	
-		
-	return $val;	
-}
 
 
 #----------------------------------------------
-# from_dom (CONSTRUCTOR)
+# xml_validate_value
 #----------------------------------------------
-sub from_xml_dom {
-	my $self 	= shift->new();
-	my $node	= shift;
-	
-	if (UNIVERSAL::isa($node, "XML::LibXML::Text")) {
-		$self->value($node->nodeValue());
-		return $self;
-	}elsif (UNIVERSAL::isa($node, "XML::LibXML::Attr")) {
-		$self->value($node->value());
-		return $self;
-	}elsif (UNIVERSAL::isa($node, "XML::LibXML::Element")) {
-		$self->value($node->textContent());		
-		return $self;
-	}	
-	return undef;
-}
-
-#----------------------------------------------
-# xml_validate
-#----------------------------------------------
-sub xml_validate {
+sub xml_validate_value {
 	my $self 	= shift;
 	my $path	= shift || '';	
 	my $type	= $self->XmlSchemaType();
-	my $value	= $self->value;
+	my $value	= $self->__value;
 	    $value	= $self->normalize_whitespace($value);
 
 	unless (defined $type) {
@@ -194,7 +133,7 @@ sub xml_validate {
     }
 
 	
-	return ($self->xml_validate_further(@_) && $self->xml_validate_ancestors(@_));	
+	return 1;	
 }
 
 
@@ -212,13 +151,13 @@ sub xml_validate_further {
 #-----------------------------------------------------------------------------
 sub xml_validate_ancestors {
 	my $self	= shift;
-	my $value	= $self->value;
+	my $value	= $self->__value;
 	my @ancestors = $self->get_ancestors();
 		
 	foreach my $class (@ancestors) {
 		next unless (UNIVERSAL::can($class, 'new') && UNIVERSAL::can($class, 'xml_validate'));
 		
-		my $obj=$class->new(value => $value);
+		my $obj=$class->new(__value => $value);
 		return 0 unless $obj->xml_validate(@_);
 	}
 	
@@ -250,7 +189,7 @@ sub normalize_whitespace {
 		my @ancestors = $self->get_ancestors();
 		foreach my $class(@ancestors) {
 			next unless UNIVERSAL::can($class, 'normalize_whitespace') && UNIVERSAL::can($class, 'new');
-			my $object = $class->new(value=>$value);
+			my $object = $class->new(__value=>$value);
 			my $nvalue = $object->normalize_whitespace($value);
 			
 			return $nvalue if ($nvalue ne $value);			
@@ -502,7 +441,7 @@ modify it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
-See also L<XML::Pastor>, L<XML::Pastor::ComplexType>, L<XML::Pastor::Type>
+See also L<XML::Pastor>, L<XML::Pastor::Type>, L<XML::Pastor::ComplexType> 
 
 And if you are curious about the implementation, see L<Class::Accessor>, L<Class::Data::Inheritable>
 

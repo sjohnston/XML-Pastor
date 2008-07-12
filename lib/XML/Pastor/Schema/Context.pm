@@ -1,9 +1,10 @@
 use utf8;
 use strict;
 
-
+use Class::Accessor;
 use XML::Pastor::Stack;
 use XML::Pastor::Schema::Object;
+
 
 package XML::Pastor::Schema::Context;
 our @ISA = qw(Class::Accessor);

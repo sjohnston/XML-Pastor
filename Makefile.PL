@@ -25,6 +25,7 @@ WriteMakefile(
                 'Class::Data::Inheritable'  	=> 0,
     			'Cwd'							=> 0,
     			'Data::Dumper'					=> 0,
+    			'Data::HashArray'				=> 0,    			
     			'File::Path'					=> 0,
     			'File::Spec'					=> 0,
     			'File::chdir'					=> 0,    	
@@ -36,7 +37,7 @@ WriteMakefile(
     			'Scalar::Util'					=> 0,
                 'Test::More'  					=> 0,
                 'URI'  							=> 0,                
-                'XML::LibXML'  					=> '1.60',                
+                'XML::LibXML'  					=> '1.66',       # Unicode problems before         
                  },
 	    
 

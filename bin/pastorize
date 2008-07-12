@@ -7,7 +7,7 @@ use lib './lib';
 use XML::Pastor::Pastorize;
 
 use vars qw($VERSION);
-$VERSION	= '0.54';
+$VERSION	= '0.6.0';
 
 XML::Pastor::Pastorize->run();
 
@@ -64,16 +64,9 @@ The typical use of the offline mode is during a 'make' process, where you have a
 generate your modules to be later installed by 'make install'. This is very similar to Java Castor's behaviour. 
 This way your XSD schemas don't have to be accessible during run-time and you don't have a performance penalty.
 
-  # Generate MULTIPLE modules, one module for each class, and put them under destination.  
-  my $pastor = XML::Pastor->new();	  
-  $pastor->generate(	
-  			mode =>'offline',
-  			style => 'multiple',
-			schema=>'/some/path/to/schema.xsd', 
-			class_prefix=>'MyApp::Data::',
-			destination=>'/tmp/lib/perl/', 							
-			);  
-
+  # Generate MULTIPLE modules, one module for each class, and put them under destination.
+  pastorize --mode offline --style multiple --destination /tmp/lib/perl --class_prefix MyApp::Data /some/path/to/schema.xsd 
+    
 =item eval 
 
 In 'I<eval>' (run-time) mode, the XSD schema is processed at 
@@ -86,13 +79,9 @@ the generated classes perform the same as if they were generated offline.
 
 Note that 'eval' mode forces the L</style> parameter to have a value of 'single';
 
-  # Generate classes in MEMORY, and EVALUATE the generated code on the fly.  
-  my $pastor = XML::Pastor->new();	    
-  $pastor->generate(	
-    		mode =>'eval',
-			schema=>'/some/path/to/schema.xsd', 
-			class_prefix=>'MyApp::Data::'
-			);  
+  # Generate classes in MEMORY, and EVALUATE the generated code on the fly.
+  pastorize --mode eval --class_prefix MyApp::Data /some/path/to/schema.xsd 
+    
 
 =item return 
 

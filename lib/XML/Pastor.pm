@@ -1,9 +1,13 @@
+#===============================================
+package XML::Pastor;
+
 use utf8;
 use strict;
 use warnings;
 no warnings qw(uninitialized);
 
 require 5.008;
+
 
 use XML::Pastor::Builtin;
 use XML::Pastor::ComplexType;
@@ -15,10 +19,9 @@ use XML::Pastor::SimpleType;
 use XML::Pastor::Stack;
 use XML::Pastor::Util;
 
-package XML::Pastor;
 
 use vars qw($VERSION);
-$VERSION	= '0.54';
+$VERSION	= '0.6.0';
 
 #------------------------------------------------------------
 sub new {
@@ -314,6 +317,8 @@ run-time giving much more flexibility to the user. This added flexibility has a 
 the fact that the XSD schema needs to be accessible at run-time. Note that the performance penalty applies only to the code genereration (pastorize) phase; 
 the generated classes perform the same as if they were generated offline.
 
+There is a command line utility called L<pastorize> that can help generating classes offline. See the documentation of L<pastorize> for more details on that.
+
 =head1 SCOPE AND WARNING
 
 B<XML::Pastor> is quite good for the so called 'data xml', that is, XML without mixed markup. 
@@ -519,7 +524,9 @@ Unions and lists are supported.
  
 Most of the restriction facets for simple types are supported (I<length, minLength, maxLength, pattern, enumeration, minInclusive, maxInclusive, minExclusive, maxExclusive, totalDigits, fractionDigits>). 
 
-Schema inclusion (include) and redefinition (redefine) are supported, allthough for 'redefine' not much testing was done. 
+Schema inclusion (include) and redefinition (redefine) are supported, allthough for 'redefine' not much testing was done.
+
+ComplexTypes with simpleContent (simple-type elements eventually with attributes) are supported (since v0.6.0). 
 
 =head2 PATIALLY SUPPORTED
 
@@ -727,7 +734,7 @@ EVEN IF SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH D
 
 =head1 SEE ALSO
 
-See also L<XML::Pastor::ComplexType>, L<XML::Pastor::SimpleType>
+See also L<pastorize>, L<XML::Pastor::ComplexType>, L<XML::Pastor::SimpleType>
 
 If you are curious about the implementation, see also L<XML::Pastor::Schema::Parser>, L<XML::Pastor::Schema::Model>, L<XML::Pastor::Generator>.
 

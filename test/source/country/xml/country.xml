@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<country xmlns="http://www.example.com/country" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.example.com/country" code="FR">
-	<name>France</name>
+<country xmlns="http://www.example.com/country" 
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		 code="FR">
+	<name lang="en">France</name>
 	<population date="2000-01-01" figure="60000000"/>
 	<currency code="EUR" name="Euro"/>
     <city code="AVA">

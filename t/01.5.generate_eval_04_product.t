@@ -6,13 +6,14 @@ use_ok ('XML::Pastor');
 
 my $pastor = XML::Pastor->new();
 	
-
 $pastor->generate(	mode =>'eval',
-					schema=>['./test/schema/schema2.xsd'], 
-					class_prefix=>"XML::Pastor::Test",
+					schema=>['./test/source/mathworks/schema/product.xsd'], 
+					class_prefix=>"XML::Pastor::Test::MathWorks::",
 					destination=>'./test/out/lib/', 					
 					verbose =>0
 				);
+				
+				
 
 #	print STDERR "\nTest OVER baby!\n";			
 ok(1);	# survived everything

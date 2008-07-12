@@ -269,6 +269,10 @@ DESCRIPTION
     phase; the generated classes perform the same as if they were generated
     offline.
 
+    There is a command line utility called pastorize that can help
+    generating classes offline. See the documentation of pastorize for more
+    details on that.
+
 SCOPE AND WARNING
     XML::Pastor is quite good for the so called 'data xml', that is, XML
     without mixed markup. It is NOT suitable for parsing and manipulating a
@@ -499,6 +503,9 @@ SCHEMA SUPPORT
 
     Schema inclusion (include) and redefinition (redefine) are supported,
     allthough for 'redefine' not much testing was done.
+
+    ComplexTypes with simpleContent (simple-type elements eventually with
+    attributes) are supported (since v0.6.0).
 
   PATIALLY SUPPORTED
     Namespaces are supported in as much as there is no more than one
@@ -754,7 +761,7 @@ DISCLAIMER
     DAMAGES.
 
 SEE ALSO
-    See also XML::Pastor::ComplexType, XML::Pastor::SimpleType
+    See also pastorize, XML::Pastor::ComplexType, XML::Pastor::SimpleType
 
     If you are curious about the implementation, see also
     XML::Pastor::Schema::Parser, XML::Pastor::Schema::Model,

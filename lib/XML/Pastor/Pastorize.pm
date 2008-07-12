@@ -1,8 +1,10 @@
-package XML::Pastor::Pastorize;
 
 use utf8;
 use strict;
 use warnings;
+
+
+package XML::Pastor::Pastorize;
 
 use XML::Pastor;
 
@@ -11,8 +13,6 @@ use File::Path;
 use File::Spec;
 use Getopt::Long;
 use Pod::Usage;
-
-
 
 #-------------------------------------------------------------
 # METHOD

@@ -13,7 +13,7 @@ our @ISA = qw(XML::Pastor::Builtin::SimpleType);
 #-----------------------------------------------------------------
 sub toList {
 	my $self  = shift;
-	my $value = $self->value() . "";
+	my $value = $self->__value() . "";
 	my @list  = split /\s+/, $value;
 	return (wantarray ? (@list) : [@list]);
 }
@@ -21,7 +21,7 @@ sub toList {
 #-----------------------------------------------------------------
 sub setFromList {
 	my $self  	= shift;
-	return $self->value(join (' ', @_));
+	return $self->__value(join (' ', @_));
 }
 
 #-----------------------------------------------------------------
@@ -36,7 +36,7 @@ sub fromList {
 sub xml_validate {
 	my $self	= shift;
 	my $path	= shift || '';	
-	my $value	= $self->value;
+	my $value	= $self->__value;
 	my $type	= $self->XmlSchemaType();
 	my $class	= $type->itemClass || "XML::Pastor::SimpleType";
 
@@ -47,7 +47,7 @@ sub xml_validate {
 	my @parts	= $self->toList();
 	
 	foreach my $part (@parts) {
-		my $object = $class->new(value => $part);
+		my $object = $class->new(__value => $part);
 		$object->xml_validate(@_) or die "Pastor : Validate : $path : List part '$part' does not validate against class '$class' in list '$value'!";
 	}
 	return $self->xml_validate_further(@_);		

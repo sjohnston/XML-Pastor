@@ -2,14 +2,17 @@ use utf8;
 use strict;
 
 use Data::Dumper;
-use XML::Pastor::Schema::Object;
+use Class::Accessor;
 
 package XML::Pastor::Schema::Model;
+use XML::Pastor::Schema::Object;
+use XML::Pastor::Schema::NamespaceInfo;
+
 use XML::Pastor::Util qw(mergeHash);
 
 our @ISA = qw(Class::Accessor);
 
-XML::Pastor::Schema::Model->mk_accessors( qw(type element group attribute attributeGroup nameSpaceUri nameSpacePrefix));
+XML::Pastor::Schema::Model->mk_accessors( qw(type element group attribute attributeGroup defaultNamespace namespaces namespaceCounter));
 
 sub new {
 	my $proto 	= shift;
@@ -33,6 +36,14 @@ sub new {
 	
 	unless ($self->{attributeGroup}) {
 		$self->{attributeGroup} = {};
+	}
+	
+	unless ($self->{namespaces}) {
+		$self->{namespaces} = {};
+	}
+
+	unless ($self->{namespaceCounter}) {
+		$self->{namespaceCounter} = 0
 	}
 	
 	return bless $self, $class;
@@ -81,6 +92,58 @@ sub add {
 	}
 	$newItem->isRedefinable(1) if ($args->{operation} !~ /redefine/i) && UNIVERSAL::can($newItem, 'isRedefinable');
 	$items->{$key} = $newItem;	
+	
+}
+
+#-------------------------------------------------------
+sub addNamespaceUri {
+	my $self = shift;
+	my $uri	 = shift;
+	my $verbose = $self->{verbose} || 0;
+	
+	return undef unless(defined($uri));
+	
+	my $nsh  = $self->namespaces();
+	
+	print STDERR "*** Adding Namespace URI to the schema model => '$uri'\n" if ($verbose >= 5);
+	
+	if (exists ($nsh->{$uri})) {
+		# URI is already in use 
+		my $ns = $nsh->{$uri};
+		$ns->usageCount($ns->usageCount+1);
+		return $ns;
+	}else {
+		# URI is not already there
+		my $nsPfx     = undef;
+		my $classPfx  = undef;
+		my $id		  = 0;
+		
+		# The counter serves for id purposes.
+		my $nsc = $self->namespaceCounter();
+		
+		if ($nsc) {
+			# There is at least one other target namespace alreday in there
+			$id			= $nsc+1;
+			$nsPfx 		= "ns" . sprintf("%03d", $id);
+			$classPfx 	= $nsPfx;
+		}
+		
+		
+		# Add the URI to the namspace hash
+		my $ns = XML::Pastor::Schema::NamespaceInfo->new(uri=> $uri, id => $id, usageCount=>1, nsPrefix => $nsPfx, classPrefix => $classPfx);
+		$nsh->{$uri} = $ns;
+		
+		# This is the first namespace that is declared. Make it the default.
+		unless ($nsc) {
+			$self->defaultNamespace($ns);
+		}
+		
+		# Increment the id counter
+		$self->namespaceCounter( $self->namespaceCounter + 1);
+		
+		return $ns;
+	}	
+	
 	
 }
 
@@ -185,8 +248,8 @@ sub _resolveObjectRef {
 		UNIVERSAL::isa($object, "XML::Pastor::Schema::AttributeGroup")	and do {$field="attributeGroup"; last SWITCH;};			
 	}		
 	
-	my $hash 	= $self->{$field};
-	my $def		= $hash->{$object->ref()};
+	my $hash 	= $self->{$field};	
+	my $def		= $hash->{$object->refKey()};
 	$object->definition($def);
 	
 	return $def;

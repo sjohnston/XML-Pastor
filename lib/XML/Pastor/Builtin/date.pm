@@ -23,7 +23,7 @@ XML::Pastor::Builtin::date->XmlSchemaType( bless( {
 #--------------------------------------------------------
 sub toDateTime() {
 	my $self  = shift;
-	my $value = $self->value;
+	my $value = $self->__value;
 	
 	unless ($value =~ /^[-]?(\d{4,})-(\d\d)-(\d\d)/) {
 		die "Pastor: Invalid date '$value'!";
@@ -71,7 +71,7 @@ sub setFromDateTime($) {
 #--------------------------------------------------------
 sub xml_validate_further {
 	my $self  = shift;
-	my $value = $self->value;
+	my $value = $self->__value;
 	
 	$value =~ /^[-]?(\d{4,})-(\d\d)-(\d\d)/;
 	return validate_date($1, $2, $3);	
