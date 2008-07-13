@@ -258,8 +258,8 @@ sub _calculateUses {
 		# Consider the class as 'used' unless it starts with XML::Pastor which is handled differently
 		# But XML::Pastor::Test::* are used for testing purposes. 
 		SWITCH: {
-			$class =~ /^XML::Pastor::Test/			and do {$result->{$class} = 1; last SWITCH;};
-			$class =~ /^XML::Pastor::/				and do {last SWITCH;};
+			(($class =~ /^XML::Pastor::/) && 
+			($class !~ /^XML::Pastor::Test/))				and do {last SWITCH;};
 			OTHERWISE:										{ $result->{$class}=1; last SWITCH;}			
 		}		
 		
@@ -271,8 +271,8 @@ sub _calculateUses {
 		# Consider the class as 'used' unless it starts with XML::Pastor which is handled differently
 		# But XML::Pastor::Test::* are used for testing purposes. 
 		SWITCH: {
-			$class =~ /^XML::Pastor::Test/			and do {$result->{$class} = 1; last SWITCH;};
-			$class =~ /^XML::Pastor::/				and do {last SWITCH;};
+			(($class =~ /^XML::Pastor::/) && 
+			($class !~ /^XML::Pastor::Test/))				and do {last SWITCH;};
 			OTHERWISE:										{ $result->{$class}=1; last SWITCH;}			
 						
 		}		
@@ -285,8 +285,8 @@ sub _calculateUses {
 			# Consider the class as 'used' unless it starts with XML::Pastor which is handled differently
 			# But XML::Pastor::Test::* are used for testing purposes. 
 			SWITCH: {
-				$class =~ /^XML::Pastor::Test/			and do {$result->{$class} = 1; last SWITCH;};
-				$class =~ /^XML::Pastor::/				and do {last SWITCH;};
+				(($class =~ /^XML::Pastor::/) && 
+				($class !~ /^XML::Pastor::Test/))				and do {last SWITCH;};
 				OTHERWISE:										{ $result->{$class}=1; last SWITCH;}							
 			}		
 		}
@@ -298,8 +298,8 @@ sub _calculateUses {
 			# Consider the class as 'used' unless it starts with XML::Pastor which is handled differently
 			# But XML::Pastor::Test::* are used for testing purposes. 
 			SWITCH: {
-				$class =~ /^XML::Pastor::Test/			and do {$result->{$class} = 1; last SWITCH;};
-				$class =~ /^XML::Pastor::/				and do {last SWITCH;};			
+				(($class =~ /^XML::Pastor::/) && 
+				($class !~ /^XML::Pastor::Test/))				and do {last SWITCH;};
 				OTHERWISE:										{ $result->{$class}=1; last SWITCH;}			
 				
 			}		

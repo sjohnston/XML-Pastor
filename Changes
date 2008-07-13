@@ -1,5 +1,8 @@
 Revision history for Perl extension XML::Pastor 
 
+0.6.1 Sun Jul 13 2008
+	- Somehow, the Pastor generated mathworks test modules had made it to the MANIFEST. Fixed it.
+	 
 0.6.0 Sat Jul 12 2008
 	- Changed versioning scheme. It's now on two dots.
 	- Builtin::boolean  boolify OVERLOAD was not working properly. Fixed it.
