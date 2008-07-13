@@ -41,10 +41,7 @@ sub test_pastor() {
 	my $pastor = XML::Pastor->new();
 	
 	$pastor->generate(	mode =>'eval',
-							schema=>['./test/schema/schema3.xsd'], 
-#							schema=>['./test/schema/schema2.xsd'], 							
-#							schema=>['./test/schema/schema1.xsd'],
-#							schema=>['./test/schema/schema4_mixed.xsd'],	# doesn't work yet.  
+							schema=>['./test/source/country/schema/country_schema4_import.xsd'], 
 							destination=>'./test/out/lib/', 
 							class_prefix=>"XML::Pastor::Test",
 							verbose => 9
@@ -52,18 +49,18 @@ sub test_pastor() {
 
 	
 	print "\n\n******* FILE SYSTEM ****************************";
-	$country = XML::Pastor::Test::country->from_xml(URI::file->new_abs('./test/xml/country.xml'));
+	$country = XML::Pastor::Test::country->from_xml(URI::file->new_abs('./test/source/country/xml/country.xml'));
 	test_country($country);		
 	$country->to_xml("./test/out/xml/country.xml");
 	
 	
 	print "\n\n******* FILE HANDLE ****************************";
-	my $fh = IO::File->new("./test/xml/country.xml", "r");	
+	my $fh = IO::File->new("./test/source/country/xml/country.xml", "r");	
 	$country = XML::Pastor::Test::country->from_xml($fh);
 	test_country($country);		
 
 	print "\n\n******* STRING ****************************";
-	my $str = slurp_file("./test/xml/country.xml");
+	my $str = slurp_file("./test/source/country/xml/country.xml");
 	$country = XML::Pastor::Test::country->from_xml($str);
 	test_country($country);		
 

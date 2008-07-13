@@ -442,7 +442,7 @@ modify it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
-See also L<XML::Pastor>, L<XML::Pastor::Type>, L<XML::Pastor::ComplexType> 
+See also L<XML::Pastor::Type>, L<XML::Pastor::ComplexType>, L<XML::Pastor>
 
 And if you are curious about the implementation, see L<Class::Accessor>, L<Class::Data::Inheritable>
 

@@ -28,7 +28,11 @@ sub key {
 # WAS
 #	return $self->name;
 
-# Let's take a ride towards namespace support	
+# Let's take a ride towards namespace support
+	my $name = $self->name;
+	
+	return $name if ($name =~ /\|/);
+		
 	my $ns = $self->targetNamespace || '';
 	return $self->name . ($ns ? '|' . $ns : "");
 }
@@ -48,7 +52,10 @@ sub refKey {
 
 # Let's take a ride towards namespace support
 	return undef unless $self->ref();
-		
+	
+	my $ref = $self->ref;	
+	
+	return $ref if ($ref =~ /\|/);
 	my $ns = $self->targetNamespace || '';
 	return $self->ref() . ($ns ? '|' . $ns : "");
 }

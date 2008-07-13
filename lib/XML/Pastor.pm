@@ -21,7 +21,7 @@ use XML::Pastor::Util;
 
 
 use vars qw($VERSION);
-$VERSION	= '0.6.2';
+$VERSION	= '0.6.3';
 
 #------------------------------------------------------------
 sub new {
@@ -526,16 +526,20 @@ Most of the restriction facets for simple types are supported (I<length, minLeng
 
 Schema inclusion (include) and redefinition (redefine) are supported, allthough for 'redefine' not much testing was done.
 
+Schema 'import' is now supported (since version 0.6.3).
+
 ComplexTypes with simpleContent (simple-type elements eventually with attributes) are supported (since v0.6.0). 
 
-=head2 PATIALLY SUPPORTED
+=head2 PARTIALLY SUPPORTED
 
-Namespaces are supported in as much as there is no more than one namespace for a given schema. 
+Namespaces are quite well supported now (since version 0.6.3). Multiple namespaces are OK.
+
+However, local name collisions with multiple namespaces will yield unpredicted results. 
+That is, if, for example, you have two child elements with the same local name but with different
+namespaces, the result is unpredictable.   
 
 =head2 NOT SUPPORTED
  
-Schema 'import' is not supported because of insufficient namespace support.
-
 Elements with 'mixed' content are NOT supported.
 
 Substitution groups are NOT supported.

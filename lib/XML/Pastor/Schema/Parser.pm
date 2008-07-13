@@ -85,10 +85,12 @@ sub includeSchema() {
 
 #------------------------------------------------------------
 # Called internally when an 'import' element is encountered in a schema.
-# NOT -YET- SUPPORTED!
 #------------------------------------------------------------
 sub importSchema() {
-	die "Pastor : Schema IMPORT functionality not yet supported!\n";
+	my $self=shift;
+	
+	$self->_process(@_, operation=>"import");		
+#	die "Pastor : Schema IMPORT functionality not yet supported!\n";
 }
 
 #------------------------------------------------------------
@@ -308,7 +310,7 @@ sub _processNode {
 	
 	# CLEAN UP
 	if (defined($obj)) {
-		$self->_fixNameSpaces($obj, $node, 'type', 'base', 'ref');
+		$self->_fixNameSpaces($obj, $node, ['type', 'base', 'ref']);
 		
 		# 'Union' must be post-processed
 		if (UNIVERSAL::isa($obj, "XML::Pastor::Schema::Union")) {
@@ -604,7 +606,7 @@ sub _processUnion {
 	my $obj	 	= XML::Pastor::Schema::Union->new()->setFields(getAttributeHash($node));
 
 	if (my $host=$context->findNode(class=>["XML::Pastor::Schema::SimpleType"])) {
-		$host->base("Union");
+		$host->base("Union|http://www.w3.org/2001/XMLSchema");
 		$host->derivedBy("union");		
 	}else {
 		die "Pastor : 'union' found where unexpected!\n" . _sprint_xml_element($node->parentNode()) . "\n";	
@@ -644,7 +646,7 @@ sub _processList {
 	my $obj	 	= XML::Pastor::Schema::List->new()->setFields(getAttributeHash($node));
 
 	if (my $host=$context->findNode(class=>["XML::Pastor::Schema::SimpleType"])) {
-		$host->base("List");
+		$host->base("List|http://www.w3.org/2001/XMLSchema");
 		$host->derivedBy("list");				
 	}else {
 		die "Pastor : 'list' found where unexpected!\n" . _sprint_xml_element($node->parentNode()) . "\n";	
@@ -1021,7 +1023,7 @@ sub _fixUpObject {
 		$obj->targetNamespace($context->targetNamespace) if ($context->targetNamespace);
 	}	
 	
-	$self->_fixNameSpaces($obj, $node, 'name');
+	$self->_fixNameSpaces($obj, $node, ['name'], localize => 1); 
 	return $obj;
 }
 
@@ -1038,17 +1040,38 @@ sub _fixNameSpaces {
 	my $self	= shift;
 	my $obj		= shift;
 	my $node	= shift;
-	my $fields	= [@_];
+	my $fields	= shift;
+	my $opts	= {@_};
+	my $localize= $opts->{localize} || 0;
 	my $context	= $self->context();
+	my $verbose	= 0;
 	
 	foreach my $field (@$fields) {
 		my $uri = undef;
 		my $v	=$obj->{$field};
-		if ($v && ($v =~ /:/o)) {
+		print STDERR "Fixing up namespaces for '$field' ('$v')...\n" if ($verbose >=9);	
+		
+		if ($v && ($v =~ /\|/)) {
+			# Do nothing. There is already a namespace in there.
+		}elsif ($v && ($v =~ /:/o)) {
+			# There is a namesapce prefix in there.
 			my ($prefix, $local) = split /:/, $v, 2;
 			$uri = $node->lookupNamespaceURI($prefix);
-			$obj->{$field} = "$local|$uri" if ($uri);
-		}		
+			if ($uri) {
+				if ($localize) {
+					$obj->{$field} = $local;
+					$obj->{targetNamespace} = $uri;
+				}else {
+					$obj->{$field} = "$local|$uri";
+				}
+			}
+		}elsif ($v) {
+			if ($localize) {
+				$obj->{targetNamespace} = $context->targetNamespace();
+			}elsif (my $uri = $context->targetNamespace()) { 
+				$obj->{$field} = "$v|$uri";
+			}
+		}	
 	}
 	return $obj;
 }	

@@ -197,20 +197,6 @@ array and you should be fine. The items in the array can even be plain scalars i
 
 =head2 OTHER METHODS
 
-=head4 grab()
-
-  $field = $object->grab($fieldName);
-
-'B<grab>' will return the value of the I<field> (attribute or child element) given by the B<$fieldName> parameter. If the I<field> does not exist, it will
-be automatically created (cally 'B<new()>' on the right class) and stuffed into the complex object.
-
-  $field = $object->grab('code');	#assuming there is an attribute or child element called 'code'.
-  
-Normally, you use the corresponding B<accessor method> to get at the I<field> (attribute or child element) of your choosing.
-The accessor will normally return B<'undef'> when the corresponding field does not exist in the object. 
-
-Sometimes, this is not what you desire. For example, when you will change the value of the field after reading it anyway, or when you will
-manipulate a child element of the field after calling the accessor anyway. This is where B<grab> comes into play. 
 
 .
 
@@ -231,33 +217,6 @@ Otherwise, it will just return the same value as L</xml_validate>.
 In case of failure, the contents of the special variable C<$@> will be left untouched in case you would like to access the 
 error message that resulted from the death of L</xml_validate>.
 
-.
-
-=head4 xml_validate()
-
-  $bool = $object->xml_validate();	# May die on you on validation errors.
-
-B<OBJECT METHOD>, overriden from L<XML::Pastor::Type>.
-
-'B<xml_validate>' validates a Pastor XML object (of a generated class) with respect to the META information that
-had originally be extracted from your original B<W3C XSD Schema>.
-
-On sucess, B<xml_validate> returns TRUE (1). On failure, it will B<die> on you on validation errors. 
-
-The W3C recommendations have been observed as closely as possible for the implementation of this method. 
-Neverthless, it remains somewhat more relaxed and easy compared to B<Castor> for example.
-
-One important note is that extra I<fields> (those that do not correspond to an attribute or child element as defined by W3C schema)
-that may be present in the object are simply ignored and left alone. This has the advantage that you can actually store state 
-information in the generated objects that are not destined to XML storage. 
-
-Another important behavior is the fact that even when you have multiple child elements for one that should have been a singleton, this does not 
-trigger an error. Instead, only the first one is considered. 
-
-The absence of a required I<field> (attribute or child element) is an error however. Furthermore, the validity of each attribute or child element is 
-also checked by calling B<xml_validate> on their respective classes even if you have only put a scalar in those. This means that such objects are created 
-during validation on the fly whose values are set to the scalar present. But such validation induced objects are not stored back to the object and the scalars are left alone.
- 
 .
 
 =head1 BUGS & CAVEATS
@@ -283,7 +242,7 @@ modify it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
-See also L<XML::Pastor>, L<XML::Pastor::Type>, L<XML::Pastor::SimpleType>
+See also  L<XML::Pastor::Type>, L<XML::Pastor::SimpleType>, L<XML::Pastor>
 
 And if you are more curious, see L<XML::Pastor::Type> (the ancestor of this class), 
 L<XML::Pastor::Schema::ComplexType> (meta type information from your B<W3C schema>)

@@ -1,5 +1,10 @@
 Revision history for Perl extension XML::Pastor 
 
+0.6.3 Mon Jul 14 2008
+	- Better namespace support
+	- Schema IMPORT is now supported
+	- New test schema and xml source for the IMPORT case
+	
 0.6.2 Sun Jul 13 2008
 	- Added a test case for mode offline/multiple.
 	- Added POD generation in mode offline/multiple.

@@ -1,9 +1,13 @@
-use utf8;
-use strict;
 
 #======================================================
 package XML::Pastor::Type;
 
+use utf8;
+use strict;
+use warnings;
+no warnings qw(uninitialized);
+
+use Carp;
 use Class::Data::Inheritable;
 use Class::Accessor;
 
@@ -453,8 +457,8 @@ sub from_xml_dom {
 			foreach my $elemName (@{$type->effectiveElements()}) {
 				next unless ( defined($children->{$elemName}));
 		
-				my $elem  		= $elemInfo->{$elemName};
-				my $class 		= $elem->class();
+				my $elem  		= $elemInfo->{$elemName} or croak("Undefined child element for '$elemName'!");
+				my $class 		= $elem->class() or croak("Undefined class for '$elemName'!");
 				my $childNodes	= $children->{$elemName};
 		
 				if ($elem->isSingleton()) {
@@ -721,6 +725,12 @@ sub to_xml_dom {
 		$targetNamespace=$xmlSchemaElement->targetNamespace if  ($xmlSchemaElement->scope =~ /global/i);
 	}
 
+	if (!$targetNamespace && UNIVERSAL::can($self, "XmlSchemaType")) {
+		my $type = $self->XmlSchemaType;
+		$targetNamespace = $type->targetNamespace;
+	}
+	
+	
 	# Create the node		
 	if ($targetNamespace) {
 		$node=$doc->createElementNS($targetNamespace, $name);		
@@ -1379,6 +1389,23 @@ methods as meta information about the generated class.
 
 =head2 OTHER METHODS
 
+=head4 grab()
+
+  $field = $object->grab($fieldName);
+
+'B<grab>' will return the value of the I<field> (attribute or child element) given by the B<$fieldName> parameter. If the I<field> does not exist, it will
+be automatically created (cally 'B<new()>' on the right class) and stuffed into the complex object.
+
+  $field = $object->grab('code');	#assuming there is an attribute or child element called 'code'.
+  
+Normally, you use the corresponding B<accessor method> to get at the I<field> (attribute or child element) of your choosing.
+The accessor will normally return B<'undef'> when the corresponding field does not exist in the object. 
+
+Sometimes, this is not what you desire. For example, when you will change the value of the field after reading it anyway, or when you will
+manipulate a child element of the field after calling the accessor anyway. This is where B<grab> comes into play. 
+
+.
+
 =head4 is_xml_valid()
 
   $bool = $object->is_xml_valid();
@@ -1412,8 +1439,21 @@ At this stage, B<xml_validate> simply returns the vaue returned by L</xml_valida
 which should perform extra checks. For B<XML::Pastor::Type> this always returns TRUE, but some builtin types 
 actually perform some extra validation during this call. 
 
-B<xml_validate> is normally overriden by descendant classes suchs as L<XML::Pastor::SimpleType> and
-L<XML::Pastor::ComplexType>.
+On sucess, B<xml_validate> returns TRUE (1). On failure, it will B<die> on you on validation errors. 
+
+The W3C recommendations have been observed as closely as possible for the implementation of this method. 
+Neverthless, it remains somewhat more relaxed and easy compared to B<Castor> for example.
+
+One important note is that extra I<fields> (those that do not correspond to an attribute or child element as defined by W3C schema)
+that may be present in the object are simply ignored and left alone. This has the advantage that you can actually store state 
+information in the generated objects that are not destined to XML storage. 
+
+Another important behavior is the fact that even when you have multiple child elements for one that should have been a singleton, this does not 
+trigger an error. Instead, only the first one is considered. 
+
+The absence of a required I<field> (attribute or child element) is an error however. Furthermore, the validity of each attribute or child element is 
+also checked by calling B<xml_validate> on their respective classes even if you have only put a scalar in those. This means that such objects are created 
+during validation on the fly whose values are set to the scalar present. But such validation induced objects are not stored back to the object and the scalars are left alone.
 
 
 =head4 xml_validate_further()

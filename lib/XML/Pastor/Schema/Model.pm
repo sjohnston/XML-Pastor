@@ -1,8 +1,7 @@
+
+package XML::Pastor::Schema::Model;
 use utf8;
 use strict;
-
-#======================================================
-package XML::Pastor::Schema::Model;
 
 use Data::Dumper;
 use Class::Accessor;
@@ -238,7 +237,7 @@ sub _resolveObjectRef {
 	
 	return $object unless ( UNIVERSAL::can($object, "ref") && $object->ref() );
 	
-	print "  Resolving REFERENCES for object '" . $object->name . "' ...\n" if ($verbose >= 6);
+	print STDERR "  Resolving REFERENCES for object '" . $object->name . "' ...\n" if ($verbose >= 6);
 	
 	my $field 	= undef;
 		
@@ -249,13 +248,20 @@ sub _resolveObjectRef {
 		UNIVERSAL::isa($object, "XML::Pastor::Schema::Attribute")		and do {$field="attribute"; last SWITCH;};
 		UNIVERSAL::isa($object, "XML::Pastor::Schema::AttributeGroup")	and do {$field="attributeGroup"; last SWITCH;};			
 	}		
+
+	print STDERR "   Reference is $field\n" if ($verbose >=9);
 	
 	my $hash 	= $self->{$field};	
-	my $def		= $hash->{$object->refKey()};
+	my $refKey	= $object->refKey;
+	
+	print STDERR "   Resolving reference for '$refKey'\n" if ($verbose >=9);
+	
+	my $def		= $hash->{$refKey};
 	$object->definition($def);
 	
 	return $def;
 }
+
 
 #------------------------------------------------------------------
 sub _resolveObjectClass {
@@ -263,22 +269,26 @@ sub _resolveObjectClass {
 	my $object		= shift;
 	my $opts		= shift;
 	my $verbose		= $opts->{verbose} || 0;
+	$opts->{object} = $object;
 	
 	my $class_prefix = $opts->{class_prefix} || '';
 	while (($class_prefix) && ($class_prefix !~ /::$/)) {
 		$class_prefix .= ':';
 	}
 		
-	print "  Resolving CLASS for object '" . $object->name . "' ... \n" if ($verbose >= 6);
+	print STDERR "  Resolving CLASS for object '" . $object->name . "' ... \n" if ($verbose >= 6);
 	
 	if (UNIVERSAL::isa($object, "XML::Pastor::Schema::Type")) {
 		print "   object '" . $object->name . "' is a Type. Resolving class...\n" if ($verbose >= 7);
 		$object->class($self->_typeToClass($object->name(), $opts));
 	}elsif (UNIVERSAL::isa($object, "XML::Pastor::Schema::Element") && ($object->scope() =~ /global/)) {
-		print "   object '" . $object->name . "' is a global element. Resolving class...\n" if ($verbose >= 7); 
-		$object->class($class_prefix. $object->name());
+		print "   object '" . $object->name . "' is a global element. Resolving class...\n" if ($verbose >= 7);
+		my $uri = UNIVERSAL::can($object, 'targetNamespace') ? $object->targetNamespace : "";
+		my $pfx = $uri ? $self->namespaceClassPrefix($uri) : ""; 
+		$object->class($class_prefix. $pfx . $object->name());
 	}elsif(UNIVERSAL::can($object, "type") && UNIVERSAL::can($object, "class")) {
-		print "   object '" . ($object->name || ''). "' 'can' type() and class(). TYPE='". ($object->type() || '') . "' CLASS='" . ($object->class() || '') . "' Resolving class...\n"  if ($verbose >= 7); 			
+		print "   object '" . ($object->name || ''). "' 'can' type() and class(). TYPE='". ($object->type() || '') . "' CLASS='" . ($object->class() || '') . "' Resolving class...\n"  if ($verbose >= 7);
+		
 		$object->class($self->_typeToClass($object->type(), $opts));		
 	}	
 
@@ -326,7 +336,7 @@ sub _resolveObjectAttributes {
 	my $verbose		= $opts->{verbose} || 0;
 
 	return undef unless (UNIVERSAL::can($object, "attributes"));
-	print "  Resolving ATTRIBUTES for object '" . $object->name . "' ...\n" if ($verbose >= 6);
+	print STDERR "  Resolving ATTRIBUTES for object '" . $object->name . "' ...\n" if ($verbose >= 6);
 	
 	my $attributes 	= $object->attributes();
 	my $attribInfo 	= $object->attributeInfo();
@@ -358,7 +368,7 @@ sub _resolveObjectElements {
 
 	return undef unless (UNIVERSAL::can($object, "elements"));
 
-	print "  Resolving ELEMENTS for object '" . $object->name . "' ...\n" if ($verbose >= 6);
+	print STDERR "  Resolving ELEMENTS for object '" . $object->name . "' ...\n" if ($verbose >= 6);
 	
 	my $elements 	= $object->elements();
 	my $elemInfo 	= $object->elementInfo();
@@ -389,7 +399,7 @@ sub _resolveObjectBase {
 	my $verbose		= $opts->{verbose} || 0;
 
 	return undef unless (UNIVERSAL::can($object, "base") && $object->base());
-	print "  Resolving BASE for object '" . $object->name . "' ...\n" if ($verbose >= 6);
+	print STDERR "  Resolving BASE for object '" . $object->name . "' ...\n" if ($verbose >= 6);
 	
 	
 	my $base 		= $object->base();
@@ -444,7 +454,11 @@ sub _typeToClass {
 	my $self 		= shift;
 	my $type		= shift;
 	my $opts		= shift;
-	
+	my $object		= $opts->{object};
+	my $isNonType	= $opts->{isNonType} || 0;
+	my $typePfx 	= $isNonType ?  "" : "Type::";
+	my $verbose		= 0;
+		
 	return undef unless (defined($type)); 
 
 	my $class_prefix = $opts->{class_prefix} || "";
@@ -464,14 +478,37 @@ sub _typeToClass {
 		my ($localType)		= split /\|/, $type;				
 		return $builtin_prefix . $localType;
 	}elsif ($type =~ /\|/) {
-		# Type with a namespace. Not yet supported!
-		die "Pastor: Namespaces not yet supported!\n";
+		# Type with a namespace. 
+		my ($localType, $uri)	= split /\|/, $type;
+		my $pfx = $self->namespaceClassPrefix($uri);		
+		
+		my $retval = $class_prefix . $pfx . $typePfx . $localType; ;
+		print STDERR "_typeToClass: from '$type'   to    '$retval'\n" if ($verbose >=9);
+		
+		return $retval;
+		#die "Pastor: Namespaces not yet supported!\n";
 	}else {
-		# Regular type.		
-		return $class_prefix . "Type::" . $type;		
+		# Regular type.
+		my $uri = UNIVERSAL::can($object, 'targetNamespace') ? $object->targetNamespace : "";
+		my $pfx = $uri ? $self->namespaceClassPrefix($uri) : ""; 
+		return $class_prefix . $pfx . $typePfx . $type;		
 	}
 }
 
+
+#-------------------------------------------------------
+sub namespaceClassPrefix {
+	my $self 	= shift;
+	my $uri		= shift;
+	
+	my $ns = $self->namespaces->{$uri};
+	my $pfx = defined($ns) ? ($ns->classPrefix() || "") : "";
+	while (($pfx) && ($pfx !~ /::$/)) {
+		$pfx .= ':';
+	}
+	
+	return $pfx;
+}
 
 1;
 
