@@ -1,10 +1,12 @@
 use utf8;
 use strict;
 
-use XML::Pastor::Builtin::Scalar;
 
 #======================================================================
 package XML::Pastor::Builtin::hexBinary;
+
+use XML::Pastor::Builtin::Scalar;
+
 our @ISA = qw(XML::Pastor::Builtin::Scalar);
 
 XML::Pastor::Builtin::hexBinary->XmlSchemaType( bless( {

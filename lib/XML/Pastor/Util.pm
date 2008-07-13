@@ -1,9 +1,11 @@
 use utf8;
 use strict;
 
-use XML::LibXML;
 
+#================================================================
 package XML::Pastor::Util;
+
+use XML::LibXML;
 use Exporter;
 
 our @ISA = qw (Exporter);

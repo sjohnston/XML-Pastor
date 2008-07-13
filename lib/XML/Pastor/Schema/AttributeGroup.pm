@@ -1,9 +1,12 @@
 use utf8;
 use strict;
 
+
+#=================================================
+package XML::Pastor::Schema::AttributeGroup;
+
 use XML::Pastor::Schema::Object;
 
-package XML::Pastor::Schema::AttributeGroup;
 our @ISA = qw(XML::Pastor::Schema::Object);
 
 XML::Pastor::Schema::AttributeGroup->mk_accessors(qw(attributes attributeInfo));

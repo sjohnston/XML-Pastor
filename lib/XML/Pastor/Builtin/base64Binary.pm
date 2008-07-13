@@ -1,12 +1,12 @@
 use utf8;
 use strict;
 
-use XML::Pastor::Builtin::Scalar;
-use MIME::Base64 ();
-
 
 #======================================================================
 package XML::Pastor::Builtin::base64Binary;
+use XML::Pastor::Builtin::Scalar;
+use MIME::Base64 ();
+
 our @ISA = qw(XML::Pastor::Builtin::Scalar);
 
 XML::Pastor::Builtin::base64Binary->XmlSchemaType( bless( {

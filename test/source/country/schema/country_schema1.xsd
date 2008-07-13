@@ -10,6 +10,11 @@
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="CodeIATA">
+		<xs:annotation>
+			<xs:documentation xml:lang="en">
+				The IATA code.
+			</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:length value="3"/>
 			<xs:whiteSpace value="collapse"/>

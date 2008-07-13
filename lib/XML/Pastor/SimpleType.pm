@@ -1,11 +1,12 @@
 use utf8;
 use strict;
 
-use XML::LibXML;
+#======================================================
+package XML::Pastor::SimpleType;
 
+use XML::LibXML;
 use XML::Pastor::Type;
 
-package XML::Pastor::SimpleType;
 use Scalar::Util qw(reftype);
 use XML::Pastor::Util  qw(getAttributeHash getChildrenHashDOM);
 

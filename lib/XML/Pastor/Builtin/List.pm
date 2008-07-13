@@ -1,13 +1,15 @@
 use utf8;
 use strict;
 
-use XML::Pastor::Builtin::SimpleType;
 
 #======================================================================
 # White space separated tokens.
 #======================================================================
 
 package XML::Pastor::Builtin::List;
+
+use XML::Pastor::Builtin::SimpleType;
+
 our @ISA = qw(XML::Pastor::Builtin::SimpleType);
 
 #-----------------------------------------------------------------

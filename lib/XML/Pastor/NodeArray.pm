@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
+#========================================================
 package XML::Pastor::NodeArray;
 use Data::HashArray;
 our @ISA = qw(Data::HashArray);

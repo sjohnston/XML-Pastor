@@ -1,10 +1,12 @@
 use utf8;
 use strict;
 
+#======================================================
+package XML::Pastor::Schema::Model;
+
 use Data::Dumper;
 use Class::Accessor;
 
-package XML::Pastor::Schema::Model;
 use XML::Pastor::Schema::Object;
 use XML::Pastor::Schema::NamespaceInfo;
 

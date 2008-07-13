@@ -1,5 +1,11 @@
 Revision history for Perl extension XML::Pastor 
 
+0.6.2 Sun Jul 13 2008
+	- Added a test case for mode offline/multiple.
+	- Added POD generation in mode offline/multiple.
+	- Further fixed the 'use' statements in sub-modules (they are almost all within the package declaration now), for Test::Unit's sake.
+
+
 0.6.1 Sun Jul 13 2008
 	- Somehow, the Pastor generated mathworks test modules had made it to the MANIFEST. Fixed it.
 	 

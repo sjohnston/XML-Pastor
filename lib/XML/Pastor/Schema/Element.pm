@@ -1,9 +1,12 @@
 use utf8;
 use strict;
 
+
+#===================================================
+package XML::Pastor::Schema::Element;
+
 use XML::Pastor::Schema::Object;
 
-package XML::Pastor::Schema::Element;
 our @ISA = qw(XML::Pastor::Schema::Object);
 
 XML::Pastor::Schema::Element->mk_accessors(qw(baseClasses minOccurs maxOccurs targetNamespace));

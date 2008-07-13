@@ -1,10 +1,9 @@
 use utf8;
 use strict;
 
-
-use XML::Pastor::Schema::Type;
-
+#=================================================
 package XML::Pastor::Schema::SimpleType;
+use XML::Pastor::Schema::Type;
 our @ISA = qw(XML::Pastor::Schema::Type);
 
 XML::Pastor::Schema::SimpleType->mk_accessors(

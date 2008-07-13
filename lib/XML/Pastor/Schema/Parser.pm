@@ -1,19 +1,21 @@
 use utf8;
 use strict;
 
+#======================================================================
+package XML::Pastor::Schema::Parser;
+
 use Cwd;
 use File::Spec;
 use LWP::UserAgent;
 use URI;
 use URI::file;
 use Class::Accessor;
+use Data::HashArray;
 
 use XML::LibXML;
 use XML::Pastor::Stack;
 use XML::Pastor::Schema;
 
-#======================================================================
-package XML::Pastor::Schema::Parser;
 use XML::Pastor::Util  qw(getAttributeHash sprint_xml_element);
 use Scalar::Util qw(reftype);
 
@@ -262,12 +264,14 @@ sub _processNode {
 	# If the element name matches any string below, we'll do the corresponding action.
 	SWITCH: for ($name){ 	# iterator = $_ (we'll do pattern matching on it)
 		/^all$/				and do {	last SWITCH;};		
-		/^annotation$/		and return 0;		# ignore children as well
+		/^annotation$/		and do {	last SWITCH;};	
+		/^appinfo$/			and return 0;		# ignore children as well		
 		/^attribute$/		and do { 	$obj=$self->_processAttribute($node);		last SWITCH;};
 		/^attributeGroup$/	and do { 	$obj=$self->_processAttributeGroup($node);	last SWITCH;};
 		/^choice$/			and do {	last SWITCH;};
 		/^complexContent$/	and do {	last SWITCH;};		
 		/^complexType$/		and do {	$obj=$self->_processComplexType($node);		last SWITCH;};
+		/^documentation$/	and do { 	$obj=$self->_processDocumentation($node);	last SWITCH;};	
 		/^element$/			and do {	$obj=$self->_processElement($node);			last SWITCH;};
 		/^extension$/		and do {	$obj=$self->_processExtension($node);		last SWITCH;};		
 		/^enumeration$/		and do {	$obj=$self->_processEnumeration($node);		last SWITCH;};
@@ -491,6 +495,42 @@ sub _processGroup {
 	return $obj;	
 }
 
+
+#------------------------------------------------------------
+# This routine is called whenever an 'documentation' element is encountered 
+# in the schema being processed.
+#------------------------------------------------------------
+sub _processDocumentation {
+	my $self 	= shift;
+	my $node 	= shift;	
+	my $context = $self->context();			
+	my $attribs	= getAttributeHash($node);
+	my $value	= $attribs->{value};
+	
+	# Find the top-most SimpleType model object closest to the top of the node-stack 
+	# of the current context. This will become our 'host' object.
+	if (my $host=$context->findNode(class=>"XML::Pastor::Schema::Object")) {
+		# If this is the first enumeration. Create the array. 
+		unless (defined($host->documentation())) {
+			$host->documentation(Data::HashArray->new());
+		}
+		
+		# Create the nex documentation
+		my $doc = XML::Pastor::Schema::Documentation->new();
+		$doc->setFields($attribs);
+		$doc->text($node->textContent());
+		
+		my $docs = $host->documentation;
+		push @$docs, $doc;		
+	}else {
+		# What is an 'documentation' doing outside the scope of a 'Schema::Object'?
+		die "Pastor : Documentation found where unexpected!\n" . _sprint_xml_element($node->parentNode() || $node) . "\n";;	
+	}
+	
+	# Nothing will get pushed on the node-stack.	
+	return undef;
+}
+
 #------------------------------------------------------------
 # This routine is called whenever an 'enumeration' element is encountered 
 # in the schema being processed.
@@ -520,6 +560,7 @@ sub _processEnumeration {
 	# Nothing will get pushed on the node-stack.	
 	return undef;
 }
+
 
 
 #------------------------------------------------------------

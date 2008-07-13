@@ -1,6 +1,7 @@
 use utf8;
 use strict;
 
+#======================================================
 package XML::Pastor::Type;
 
 use Class::Data::Inheritable;

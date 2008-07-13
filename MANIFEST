@@ -23,6 +23,7 @@ lib/XML/Pastor/Schema/Attribute.pm
 lib/XML/Pastor/Schema/AttributeGroup.pm
 lib/XML/Pastor/Schema/ComplexType.pm
 lib/XML/Pastor/Schema/Context.pm
+lib/XML/Pastor/Schema/Documentation.pm
 lib/XML/Pastor/Schema/Element.pm
 lib/XML/Pastor/Schema/Group.pm
 lib/XML/Pastor/Schema/List.pm

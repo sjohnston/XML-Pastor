@@ -1,16 +1,17 @@
 use utf8;
 use strict;
 
+#======================================================
+package XML::Pastor::ComplexType;
+
 use XML::LibXML;
 use File::Path;
 use File::Spec;
 use IO::File;
 use IO::Handle;
 use LWP::UserAgent;
-
-package XML::Pastor::ComplexType;
-
 use XML::Pastor::Type;
+
 our @ISA = qw(XML::Pastor::Type);
 
 

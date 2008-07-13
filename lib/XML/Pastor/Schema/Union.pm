@@ -1,9 +1,9 @@
 use utf8;
 use strict;
 
-use XML::Pastor::Schema::Object;
-
+#=====================================================
 package XML::Pastor::Schema::Union;
+use XML::Pastor::Schema::Object;
 our @ISA = qw(XML::Pastor::Schema::Object);
 
 XML::Pastor::Schema::Union->mk_accessors(qw(memberTypes memberClasses));

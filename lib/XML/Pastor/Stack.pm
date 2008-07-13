@@ -1,6 +1,11 @@
-package XML::Pastor::Stack;
+use utf8;
 use strict;
 use warnings;
+
+
+#===============================================
+package XML::Pastor::Stack;
+
 
 our $VERSION = '0.01';
 

@@ -1,10 +1,12 @@
 use utf8;
 use strict;
 
-use XML::Pastor::Builtin::Scalar;
 
 #======================================================================
 package XML::Pastor::Builtin::dateTime;
+
+use XML::Pastor::Builtin::Scalar;
+
 our @ISA = qw(XML::Pastor::Builtin::Scalar);
 
 use XML::Pastor::Util qw(validate_date validate_time);

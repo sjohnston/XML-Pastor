@@ -1,10 +1,12 @@
 use utf8;
 use strict;
 
-use XML::Pastor::Builtin::Scalar;
 
 #======================================================================
 package XML::Pastor::Builtin::Numeric;
+
+use XML::Pastor::Builtin::Scalar;
+
 our @ISA = qw(XML::Pastor::Builtin::Scalar);
 
 

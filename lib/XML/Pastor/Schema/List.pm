@@ -1,9 +1,11 @@
 use utf8;
 use strict;
 
-use XML::Pastor::Schema::Object;
 
+#========================================================
 package XML::Pastor::Schema::List;
+
+use XML::Pastor::Schema::Object;
 our @ISA = qw(XML::Pastor::Schema::Object);
 
 XML::Pastor::Schema::List->mk_accessors(qw(itemType itemClass));

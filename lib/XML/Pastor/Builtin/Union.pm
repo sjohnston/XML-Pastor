@@ -1,10 +1,12 @@
 use utf8;
 use strict;
 
-use XML::Pastor::Builtin::SimpleType;
 
 #======================================================================
 package XML::Pastor::Builtin::Union;
+
+use XML::Pastor::Builtin::SimpleType;
+
 our @ISA = qw(XML::Pastor::Builtin::SimpleType);
 
 #--------------------------------------------------------------
