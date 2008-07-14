@@ -21,7 +21,7 @@ use XML::Pastor::Util;
 
 
 use vars qw($VERSION);
-$VERSION	= '0.6.3';
+$VERSION	= '1.0.0';
 
 #------------------------------------------------------------
 sub new {
@@ -674,13 +674,11 @@ There are known limitations however:
 
 =item * Namespaces
 
-The namespace support is somewhat shaky. Currently at most one I<targetNamspace> is supported. 
-Multiple target namespaces are not supported. That's why schema 'import' facility does not work. 
+Namespaces are quite well supported now (since version 0.6.3). Multiple namespaces are OK.
 
-=item * Schema import
-
-The 'import' element of W3C XSD schema is not supported at this time. This is basically because of namespace complexities. If you think of a 
-way to support the 'import' feature, please let me know. 
+However, local name collisions with multiple namespaces will yield unpredicted results. 
+That is, if, for example, you have two child elements with the same local name but with different
+namespaces, the result is unpredictable.
 
 =item * 'mixed' elements
 
@@ -692,8 +690,8 @@ Substitution groups are not supported at this time.
 
 =item * Encoding
 
-Only the B<UTF-8> encoding is supported. You should make sure that your data is in UTF-8 format. It may be possible to read (but not write) XML from other encodings. 
-But this feature is not tested at this time. 
+Only the B<UTF-8> encoding is -officially- supported. You should make sure that your data is in UTF-8 format. It may be possible to read and write XML from other encodings. 
+But this feature is experimental and not tested at this time. 
 
 =item * Default values for attributes
 

@@ -25,7 +25,7 @@ __END__
 
 =head1 NAME
 
-B<XML::Pastor::Schema::NameSpaceInfo> - Class that represents the META information about a target namespace within a W3C schema.
+B<XML::Pastor::Schema::NamespaceInfo> - Class that represents the META information about a target namespace within a W3C schema.
 
 =head1 WARNING
 
