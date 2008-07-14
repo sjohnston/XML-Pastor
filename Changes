@@ -1,5 +1,10 @@
 Revision history for Perl extension XML::Pastor 
 
+1.0.1 Mon Jul 14 2008
+	- Corrected some documenation errors.
+	- Re-added version numbers to NodeArray.pm and Pastorize.pm (because of PAUSE indexing issues)
+	- Bumped up version number because of PAUSE indexing errors.
+	
 1.0.0 Mon Jul 14 2008
 	- Corrected some documenation errors.
 	- Bumped up version number because of PAUSE indexing errors.
