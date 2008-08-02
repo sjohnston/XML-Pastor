@@ -211,7 +211,11 @@ sub  is_xml_field_multiple($$)  {
 	return !$self->is_xml_field_singleton(@_);
 }
 
-
+#------------------------------------------------------
+# OBJECT METHOD
+# Get/set the text content.
+#------------------------------------------------------
+sub xml_text_content { &__value;}
 
 #------------------------------------------------------
 # Grab a field. The difference from 'get'is that 'grab' will create
@@ -1483,7 +1487,8 @@ Note that there may be other bugs or limitations that the author is not aware of
 
 =head1 AUTHOR
 
-Ayhan Ulusoy <dev@ulusoy.name>
+Ayhan Ulusoy <dev(at)ulusoy(dot)name>
+
 
 
 =head1 COPYRIGHT

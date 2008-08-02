@@ -299,6 +299,9 @@ METHODS
     'generate' on an object (rather than the class) as in the future,
     'generate' may no longer be a class method.
 
+  version	(CLASS METHOD)
+    Returns the current VERSION of XML::Pastor;
+
   generate(%options)
     Currently a CLASS METHOD, but may change to be an OBJECT METHOD in the
     future. It works when called on an OBJECT too at this time.
@@ -425,7 +428,10 @@ METHODS
             produced.
 
         multiple
-            A separate piece of code for each class will be produced.
+            A separate piece of code for each class will be produced. In
+            addition, a module that 'uses' each of the individual generated
+            modules will be created whose name is given by the 'module'
+            argument (or otherwise it's given by 'class_prefix').
 
     class_prefix
         If present, the names of the generated classes will be prefixed by
@@ -504,17 +510,21 @@ SCHEMA SUPPORT
     Schema inclusion (include) and redefinition (redefine) are supported,
     allthough for 'redefine' not much testing was done.
 
+    Schema 'import' is now supported (since version 0.6.3).
+
     ComplexTypes with simpleContent (simple-type elements eventually with
     attributes) are supported (since v0.6.0).
 
-  PATIALLY SUPPORTED
-    Namespaces are supported in as much as there is no more than one
-    namespace for a given schema.
+  PARTIALLY SUPPORTED
+    Namespaces are quite well supported now (since version 0.6.3). Multiple
+    namespaces are OK.
+
+    However, local name collisions with multiple namespaces will yield
+    unpredicted results. That is, if, for example, you have two child
+    elements with the same local name but with different namespaces, the
+    result is unpredictable.
 
   NOT SUPPORTED
-    Schema 'import' is not supported because of insufficient namespace
-    support.
-
     Elements with 'mixed' content are NOT supported.
 
     Substitution groups are NOT supported.
@@ -695,15 +705,13 @@ BUGS & CAVEATS
 
     *   Namespaces
 
-        The namespace support is somewhat shaky. Currently at most one
-        *targetNamspace* is supported. Multiple target namespaces are not
-        supported. That's why schema 'import' facility does not work.
+        Namespaces are quite well supported now (since version 0.6.3).
+        Multiple namespaces are OK.
 
-    *   Schema import
-
-        The 'import' element of W3C XSD schema is not supported at this
-        time. This is basically because of namespace complexities. If you
-        think of a way to support the 'import' feature, please let me know.
+        However, local name collisions with multiple namespaces will yield
+        unpredicted results. That is, if, for example, you have two child
+        elements with the same local name but with different namespaces, the
+        result is unpredictable.
 
     *   'mixed' elements
 
@@ -716,10 +724,10 @@ BUGS & CAVEATS
 
     *   Encoding
 
-        Only the UTF-8 encoding is supported. You should make sure that your
-        data is in UTF-8 format. It may be possible to read (but not write)
-        XML from other encodings. But this feature is not tested at this
-        time.
+        Only the UTF-8 encoding is -officially- supported. You should make
+        sure that your data is in UTF-8 format. It may be possible to read
+        and write XML from other encodings. But this feature is experimental
+        and not tested at this time.
 
     *   Default values for attributes
 
@@ -730,7 +738,7 @@ BUGS & CAVEATS
     aware of.
 
 AUTHOR
-    Ayhan Ulusoy <dev@ulusoy.name>
+    Ayhan Ulusoy <dev(at)ulusoy(dot)name>
 
 COPYRIGHT
       Copyright (C) 2006-2008 Ayhan Ulusoy. All Rights Reserved.

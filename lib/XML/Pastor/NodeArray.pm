@@ -1,8 +1,8 @@
-# $Id$
-#
+use utf8;
 use strict;
 use warnings;
-use utf8;
+no warnings qw(uninitialized);
+
 
 #========================================================
 package XML::Pastor::NodeArray;
@@ -51,7 +51,7 @@ Note that there may be other bugs or limitations that the author is not aware of
 
 =head1 AUTHOR
 
-Ayhan Ulusoy <dev@ulusoy.name>
+Ayhan Ulusoy <dev(at)ulusoy(dot)name>
 
 
 =head1 COPYRIGHT

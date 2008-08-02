@@ -108,11 +108,14 @@ Possible values are :
 
 =item single 
 
-One block of code containg all the generated classes will be produced. 
+One block of code containg all the generated classes will be produced. This will be put in the module given by the
+'module' argument (or otherwise the class_prefix).
 
 =item multiple 
 
-A separate piece of code for each class will be produced. 
+A separate piece of code for each class will be produced. In addition, a module that 'uses' each of the 
+individual generated modules will be created whose name is given by the 'module' argument (or otherwise it's 
+given by 'class_prefix').
 
 =back
 

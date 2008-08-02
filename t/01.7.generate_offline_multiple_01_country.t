@@ -18,7 +18,7 @@ $pastor->generate(	mode =>'offline',
 					
 
 
-eval ("use lib qw (./test/out/lib/);\nuse XML::Pastor::Test::country;");
+eval ("use lib qw (./test/out/lib/);\nuse XML::Pastor::Test;");
 
 if ($@) {
 	print STDERR "$@\n";

@@ -1,6 +1,7 @@
 use utf8;
 use strict;
 use warnings;
+no warnings qw(uninitialized);
 
 
 #===============================================
@@ -143,7 +144,7 @@ There are various Stack packages out there but none of them seemed simple enough
 
 =head1 AUTHOR
 
-Ayhan Ulusoy <dev@ulusoy.name>
+Ayhan Ulusoy <dev(at)ulusoy(dot)name>
 
 The author of the original module L<Data::Stack> is: Cory Watson, E<lt>cpan@onemogin.comE<gt>
 

@@ -21,7 +21,7 @@ use XML::Pastor::Util;
 
 
 use vars qw($VERSION);
-$VERSION	= '1.0.1';
+$VERSION	= '1.0.2';
 
 #------------------------------------------------------------
 sub new {
@@ -29,6 +29,11 @@ sub new {
 	my $class	= ref($proto) || $proto;
 	my $self = {@_};	
 	return bless $self, $class;
+}
+
+#--------------------------------------------------------
+sub version {
+	return $XML::Pastor::VERSION;
 }
 
 #--------------------------------------------------------
@@ -343,7 +348,9 @@ This is currently unnecessary as the only method ('I<generate>') is a class meth
 However, it is higly recommended to use it and call 'generate' on an object (rather than
 the class) as in the future, 'generate' may no longer be a class method.
 
-
+=head2 version	(CLASS METHOD)
+         
+Returns the current VERSION of XML::Pastor;
 
 =head2 generate(%options)         
 
@@ -458,7 +465,9 @@ One block of code containg all the generated classes will be produced.
 
 =item multiple 
 
-A separate piece of code for each class will be produced. 
+A separate piece of code for each class will be produced. In addition, a module that 'uses' each of the 
+individual generated modules will be created whose name is given by the 'module' argument (or otherwise it's 
+given by 'class_prefix').
 
 =back
 
@@ -703,7 +712,7 @@ Note that there may be other bugs or limitations that the author is not aware of
 
 =head1 AUTHOR
 
-Ayhan Ulusoy <dev@ulusoy.name>
+Ayhan Ulusoy <dev(at)ulusoy(dot)name>
 
 
 =head1 COPYRIGHT

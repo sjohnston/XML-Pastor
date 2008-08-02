@@ -2,6 +2,8 @@
 package XML::Pastor::Schema::Model;
 use utf8;
 use strict;
+use warnings;
+no warnings qw(uninitialized);
 
 use Data::Dumper;
 use Class::Accessor;
@@ -730,7 +732,7 @@ Note that there may be other bugs or limitations that the author is not aware of
 
 =head1 AUTHOR
 
-Ayhan Ulusoy <dev@ulusoy.name>
+Ayhan Ulusoy <dev(at)ulusoy(dot)name>
 
 
 =head1 COPYRIGHT

@@ -2,6 +2,7 @@
 use utf8;
 use strict;
 use warnings;
+no warnings qw(uninitialized);
 
 #===============================================
 package XML::Pastor::Pastorize;
@@ -36,8 +37,8 @@ sub run ($;@) {
 
 	$opts->{class_prefix}	||= 'MyApp::Data::';	# should override
 	$opts->{destination}	||= '/tmp/lib/perl/';	# should override		
-	$opts->{mode}			||= 'eval';	
-	$opts->{module}			||= 'Module';			# should override
+	$opts->{mode}			||= 'eval';
+	$opts->{module}			||= $opts->{class_prefix};		
 	$opts->{style}			||= 'single';	
 	$opts->{schema}			||= [];					# Will get it from @ARGV (multiple OK)
 	$opts->{verbose}		||= 0;
@@ -136,7 +137,7 @@ sub validate_opts($) {
 		}				
 
 		# Module undefined while mode is generate and style is single. 
-		if ($style eq 'single') {
+		if ($style eq 'single')  {
 			unless ($opts->{module}) {	
 				pod2usage(	-message => "Syntax error. 'module' required when 'mode' is offline and 'style' is single!\n",
 							-exitval => 1,
@@ -236,7 +237,7 @@ For more information on XML::Pastor, see L<XML::Pastor>.
 
 =head1 AUTHOR
 
-Ayhan Ulusoy <dev@ulusoy.name>
+Ayhan Ulusoy <dev(at)ulusoy(dot)name>
 
 
 =head1 COPYRIGHT
