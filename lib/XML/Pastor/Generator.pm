@@ -11,7 +11,7 @@ use IO::File;
 use File::Path;
 use File::Spec;
 use Class::Accessor;
-use XML::Pastor::Util qw(mergeHash);
+use XML::Pastor::Util qw(mergeHash module_path);
 
 our @ISA = qw(Class::Accessor);
 
@@ -56,6 +56,13 @@ sub generate {
 		$destination .= '/';
 	}
 	$args->{destination}= $destination;
+
+	my $class_prefix = $args->{class_prefix} || '';	
+	while (($class_prefix) && ($class_prefix !~ /::$/)) {
+		$class_prefix .= ':';
+	}
+	$args->{metaModule} 		= $class_prefix . "Pastor::Meta"; 
+
 	
 	print STDERR "\nGenerating code...\n" if ($verbose >=2);
 	if ($style =~ /single/) {
@@ -85,6 +92,9 @@ sub _generateSingle {
 			$code	.= $self->_fabricateCode(@_, object=>$items->{$name});
 		}
 	}
+	
+	$code .= $self->_fabricateHeaderModuleCode(@_);
+	$code .= $self->_fabricateMetaModuleCode(@_);
 	
 	# Perl modules must return TRUE
 	$code .= "\n\n1;\n";
@@ -123,10 +133,11 @@ sub _generateMultiple {
 	my $args			= {@_};
 	my $model			= $args->{model};
 	my $class_prefix	= $args->{class_prefix}; 	
-	my $module 			= $args->{module} || $class_prefix; 
+	my $module 			= $args->{module} || $class_prefix;
+	my $metaModule		= $args->{metaModule};
+	 
 	my $types	= $model->type();
 	my $destination		= $args->{destination} || '/tmp/lib/perl/';
-	$destination .= '/' if ($destination && ($destination !~ /\/$/));
 	
 	foreach my $items ($model->type(), 	$model->element()) {
 		foreach my $name (sort keys %$items) {
@@ -135,25 +146,23 @@ sub _generateMultiple {
 			$code 	   	.= "\n\n__END__\n\n";
 			$code		.=$self->_fabricatePod(@_, object=>$object);
 		
-			my $file	= $object->class();
-			$file = $destination . $file . '.pm';
-			$file =~ s/::/\//g;
-				
+			my $file = module_path(module => $object->class(), destination => $destination);	
 			$self->_writeCode(@_, file=>$file, code=>$code);
 		}
 	}
 
+	# META mdoule
+	my $code = $self->_fabricateMetaModuleCode(@_);
+	my $file = module_path(module => $metaModule, destination => $destination);				
+	$self->_writeCode(@_, file=>$file, code=>$code);
+	
+	
+	# HEADER module
 	if ($module) {
 		# Generate the module with all the 'use' statements for different modules.
-		my $code = $self->_fabricateModuleCode(@_);
-		# get ride of any trailing columns.
-		while ($module =~ /:$/) {
-			$module =~ s/:$//;
-		}		
-		my $file	= $module;
-		$file = $destination . $file . '.pm';
-		$file =~ s/::/\//g;
-				
+		my $code = $self->_fabricateHeaderModuleCode(@_);
+		
+		my $file = module_path(module => $module, destination => $destination);				
 		$self->_writeCode(@_, file=>$file, code=>$code);
 	}
 	
@@ -164,32 +173,45 @@ sub _generateMultiple {
 #--------------------------------------------
 # Fabricate the code for the module that will 'use' all the generated classes.
 #--------------------------------------------
-sub _fabricateModuleCode {
+sub _fabricateHeaderModuleCode {
 	my $self 			= shift;
 	my $args			= {@_};
 	my $model			= $args->{model};
+	my $style			= $args->{style};
 	my $class_prefix	= $args->{class_prefix}; 	
-	my $module 			= $args->{module} || $class_prefix; 
+	my $module 			= $args->{module} || $class_prefix;
+	my $metaModule		= $args->{metaModule}; 
 	my $code;
 		
 	# get ride of any trailing columns.
 	while ($module =~ /:$/) {
 		$module =~ s/:$//;
 	}
-	$code  = _fabricatePrelude(@_);
-	$code .= "\npackage $module;\n";
-		
-	foreach my $items ($model->type(), 	$model->element()) {
-		foreach my $name (sort keys %$items) {
-			my $object 	= $items->{$name};
-			my $class	= $object->class();			
-			$code .= "\nuse $class;"
+	$code  = _fabricatePrelude(@_) unless ($style =~ /single/i);
+	$code .= "\n\npackage $module;\n";
+	
+	# USE
+	unless ($style =~ /single/i) {
+		foreach my $items ($model->type(), 	$model->element()) {
+			foreach my $name (sort keys %$items) {
+				my $object 	= $items->{$name};
+				my $class	= $object->class();			
+				$code .= "\nuse $class;"
+			}
 		}
+		
+		$code .= "\n\nuse $metaModule;"  if ($metaModule);
+	}
+
+	# EPILOGUE
+	unless ($style =~ /single/i) {
+		# Perl modules must return TRUE				
+		$code .= "\n\n1;\n";
 	}
 	
-	$code .= "\n\n1;\n";
 	return $code;		
 }
+
 
 #--------------------------------------------
 # Fabricate the first prelude stub of code for each module.
@@ -209,6 +231,44 @@ sub _fabricatePrelude {
 }
 
 #--------------------------------------------
+# Fabricate the code for the META module.
+#--------------------------------------------
+sub _fabricateMetaModuleCode {
+	my $self 			= shift;
+	my $args			= {@_};
+	my $model			= $args->{model};
+	my $style			= $args->{style};
+	my $module			= $args->{metaModule};
+	my $isa				= [qw(XML::Pastor::Meta)];
+	my $code			= "";
+		
+	
+	$code  = _fabricatePrelude(@_) unless ($style =~ /single/i);
+	
+	$code .= "\n\npackage $module;\n";
+	
+	# ISA		
+	$code .= "\n\nour " .  '@ISA=qw(' . join (' ', @$isa) . ");";
+	
+	# Model	
+	$code .= "\n\n$module->Model( " ;		
+	$code .= _dumpObject($model);
+	$code =~ s/\n$//;
+	$code .=" );";	
+
+	# EPILOGUE		
+	unless ($style =~ /single/i) {
+		# Perl modules must return TRUE
+		$code .= "\n\n1;\n";
+	}
+
+	return $code;		
+}
+
+
+
+
+#--------------------------------------------
 # Fabricate the code for one given class (type).
 # Can work in 'single' or 'multiple' style (knows to distinguish them).
 # Will create code in a separate 'package' section for the class.
@@ -225,7 +285,7 @@ sub _fabricateCode {
 	print STDERR "\nFabricating code for class '$class' ..." if ($verbose >= 3);
 
 	# PRELUDE
-	$code .= $self->_fabricatePrelude(@_) unless ($style =~ /single/);
+	$code .= $self->_fabricatePrelude(@_) unless ($style =~ /single/i);
 
 	# package	
 	$code .= "\n\n#================================================================";
@@ -233,7 +293,7 @@ sub _fabricateCode {
 
 	# use
 	# in "single" style, we won't need the use clauses because all packages will be in one module.
-	unless ($style =~ /single/) {	
+	unless ($style =~ /single/i) {	
 		my $uses = $self->_calculateUses($object, {@_});	
 		foreach my $use (sort keys %$uses) {
 			next if $use eq $class;	# We won't be using ourselves!
@@ -292,7 +352,7 @@ sub _fabricateCode {
 
 
 	# EPILOGUE		
-	unless ($style =~ /single/) {
+	unless ($style =~ /single/i) {
 		# Perl modules must return TRUE
 		$code .= "\n\n1;\n";
 	}

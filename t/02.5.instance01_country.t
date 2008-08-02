@@ -1,5 +1,5 @@
 use utf8;
-use Test::More tests=>97;
+use Test::More tests=>98;
 
 use Scalar::Util qw(refaddr);
 
@@ -20,14 +20,17 @@ $pastor->generate(	mode =>'eval',
 				);
 				
 				
-# ======= COUNTRY ==============				
-my $country_in = XML::Pastor::Test::country->from_xml(URI::file->new_abs('./test/source/country/xml/country.xml'));
+# ======= COUNTRY ==============
+my $country_class = XML::Pastor::Test::Pastor::Meta->Model->xml_item_class('country');
+is($country_class, "XML::Pastor::Test::country");
+
+my $country_in = $country_class->from_xml(URI::file->new_abs('./test/source/country/xml/country.xml'));
 
 $country_in->to_xml_file('./test/out/country.xml');
-my $country_out = XML::Pastor::Test::country->from_xml_file('./test/out/country.xml');
+my $country_out = $country_class->from_xml_file('./test/out/country.xml');
 
 $country_in->to_xml_file('./test/out/country_latin1.xml', encoding => 'iso-8859-1');
-my $country_latin1 = XML::Pastor::Test::country->from_xml_file('./test/out/country_latin1.xml');
+my $country_latin1 = $country_class->from_xml_file('./test/out/country_latin1.xml');
 
 
 my @countries = ($country_in, $country_out, $country_latin1);

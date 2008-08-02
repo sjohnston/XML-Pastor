@@ -1,5 +1,10 @@
 Revision history for Perl extension XML::Pastor 
 
+1.0.3 Sat Aug 02 2008
+	- Now, XML::Pastor also generates a special class $class_prefix . "::Pastor::Meta", which may be used to get at the schema Model()
+	- XML::Pastor::Schema::Model now has two new instance methods: xml_item() and xml_item_class  
+	- Updated the documentation.
+	
 1.0.2 Sat Aug 02 2008
 	- Now, XML::Pastor::Type has a method named 'xml_text_content()' which is an alias for '__value()'.
 	- Added generation of a header module with 'use' statements for all the element and type modules (in case of multiple).

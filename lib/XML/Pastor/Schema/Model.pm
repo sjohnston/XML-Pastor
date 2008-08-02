@@ -53,6 +53,42 @@ sub new {
 }
 
 #-------------------------------------------------------
+sub xml_item {
+	my $self 	= shift;
+	my $name	= shift;
+	my $nsUri	= shift;
+	my $verbose = 0;
+	
+	if (!$nsUri && $self->defaultNamespace) {
+		$nsUri = $self->defaultNamespace()->uri();
+	}
+	
+	my $key = $nsUri ? "$name|$nsUri" : $name;
+	
+	print STDERR "Model item: name = '$name',   key = '$key'\n" if ($verbose >= 9);
+	my $item;
+	foreach my $hname (qw(element type group attribute attributeGroup)) {
+		my $items = $self->{$hname};
+		$item = $items->{$key};
+		last if defined($item);
+	}
+
+	print STDERR "Found item: name = '$name'\n" if (defined ($item) && ($verbose >= 9));
+		
+	return $item;
+	
+}
+
+#-------------------------------------------------------
+sub xml_item_class {
+	my $self 	= shift;
+	my $item = $self->xml_item(@_);
+	
+	return undef unless (defined($item));
+	return $item->class || ($item->definition && $item->definition->class);		
+}
+
+#-------------------------------------------------------
 sub add {
 	my $self = shift;
 	my $args = {@_};
@@ -279,6 +315,11 @@ sub _resolveObjectClass {
 	}
 		
 	print STDERR "  Resolving CLASS for object '" . $object->name . "' ... \n" if ($verbose >= 6);
+	
+	if (UNIVERSAL::can($object, "metaClass")) {
+		$object->metaClass($class_prefix . "Pastor::Meta");
+	}
+	
 	
 	if (UNIVERSAL::isa($object, "XML::Pastor::Schema::Type")) {
 		print "   object '" . $object->name . "' is a Type. Resolving class...\n" if ($verbose >= 7);
@@ -673,7 +714,23 @@ again to the model. This means that the object is defined twice in the W3C schem
 is relaxed when the object within the sceham is marked as I<redefinable> (see L<XML::Pastor::Schema::Object/isRedefinable()>). 
 This is typically the case when we are in a I<redefine> block (when a schema is included wit the redefine tag). 
 
+=head4 xml_item($name, [$nsUri])
 
+Returns the Schema Model item for a given name, and optionally, a namespace URI. If namespace URI is omitted, then
+the default namespace URI for the model is used.
+
+This method does a search on the different hashes kept by the model (element, type, group, attribute, attributeGroup) in that order, and 
+will return the first encountred item.
+ 
+=head4 xml_item_class($name, [$nsUri])
+
+Returns the class name of a Schema Model item for a given name, and optionally, a namespace URI. If namespace URI is omitted, then
+the default namespace URI for the model is used.
+
+This is in fact a shortcut for:
+   $model->xml_item($name)->class();
+
+ 
 =head4 resolve()
    
   $model->resolve(%options);

@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                XML-Pastor
-version:             1.0.2
+version:             1.0.3
 abstract:            Generate Perl classes with XML bindings starting from a W3C XSD Schema
 license:             perl
 author:              

@@ -16,6 +16,7 @@ lib/XML/Pastor/Builtin/Union.pm
 lib/XML/Pastor/ComplexType.pm
 lib/XML/Pastor/Element.pm
 lib/XML/Pastor/Generator.pm
+lib/XML/Pastor/Meta.pm
 lib/XML/Pastor/NodeArray.pm
 lib/XML/Pastor/Pastorize.pm
 lib/XML/Pastor/Schema.pm

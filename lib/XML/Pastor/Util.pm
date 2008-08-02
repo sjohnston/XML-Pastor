@@ -15,7 +15,9 @@ our @EXPORT = qw();
 our @EXPORT_OK = qw( 	mergeHash 
 						getAttributeHash
 						getChildrenHashDOM
-												
+						
+						module_path
+											
 						slurp_file
 						sprint_xml_doc
 						sprint_xml_element
@@ -157,7 +159,30 @@ sub slurp_file {
     return <$fh>;
 }
 
-
+#------------------------------------------------------------
+# module_path
+# Given a module name (without the .pm) and a destination directory,
+# Compute the file path where the module would be written to. 
+#-------------------------------------------------------------
+sub module_path {
+	my $args 			= {@_};
+	my $module 			= $args->{module}  || die "Need a module name!";
+	my $destination 	= $args->{destination}  || "/tmp/lib/perl/";
+	
+	# Add a trailing slash if necessary.
+	$destination .= '/' if ($destination && ($destination !~ /\/$/));
+	
+	# get ride of any trailing columns.
+	while ($module =~ /:$/) {
+		$module =~ s/:$//;
+	}
+			
+	my $file	= $module;
+	$file = $destination . $file . '.pm';
+	$file =~ s/::/\//g;
+	
+	return $file;
+}
 
 #------------------------------------------------
 # code taken from XML::Schema::Validate who took it from Date::Simple
